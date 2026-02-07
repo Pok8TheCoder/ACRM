@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/admin/infinity-pane/static/css/main.111912b3.css",
+    "main.js": "/admin/infinity-pane/static/js/main.80b4c93e.js",
+    "index.html": "/admin/infinity-pane/index.html",
+    "main.111912b3.css.map": "/admin/infinity-pane/static/css/main.111912b3.css.map",
+    "main.80b4c93e.js.map": "/admin/infinity-pane/static/js/main.80b4c93e.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.111912b3.css",
+    "static/js/main.80b4c93e.js"
+  ]
+}

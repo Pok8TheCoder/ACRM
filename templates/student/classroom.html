@@ -1,0 +1,601 @@
+{% extends "student/layout.html" %}
+
+{% block page_title %}Classroom{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Subject Cards Grid -->
+    <div id="subjectsView" class="space-y-6">
+        <div id="subjectsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Cards will be loaded via JavaScript -->
+            <div class="flex items-center justify-center col-span-full">
+                <div class="animate-spin">
+                    <i class="fas fa-spinner text-4xl text-acrm-orange"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subject Details Embedded View -->
+    <div id="subjectDetailView" class="hidden bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
+        <div class="bg-gradient-to-r from-acrm-navy to-acrm-light-navy text-white p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <p id="modalBadgeLabel" class="inline-flex items-center px-3 py-1 rounded-full bg-white/20 text-xs font-semibold uppercase tracking-wide mb-2">Subject Type</p>
+                <h2 id="modalSubjectName" class="text-3xl font-bold mb-2">Subject Name</h2>
+                <p id="modalTeacherInfo" class="text-sm opacity-90">Teacher Info</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <div id="modalSubjectCode" class="text-sm text-white/80"></div>
+                <button id="closeDetailBtn" class="inline-flex items-center gap-2 bg-white text-acrm-navy font-semibold px-4 py-2 rounded-lg shadow hover:shadow-md transition">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to subjects
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-gray-50 border-b border-gray-100 px-6 py-4">
+            <div id="subjectMetaStrip" class="flex flex-wrap gap-3 text-sm text-gray-600"></div>
+        </div>
+
+        <div class="p-6">
+            <div class="flex flex-wrap border-b border-gray-200 mb-6">
+                <button id="assignmentsTabBtn" class="px-6 py-3 font-semibold text-acrm-navy border-b-2 border-acrm-orange transition">
+                    Assignments
+                </button>
+                <button id="resourcesTabBtn" class="px-6 py-3 font-semibold text-gray-600 border-b-2 border-transparent hover:text-acrm-navy transition">
+                    Resources
+                </button>
+            </div>
+
+            <div id="assignmentsTab">
+                <div class="mb-4">
+                    <h3 class="text-lg font-semibold text-acrm-navy mb-3">
+                        <i class="fas fa-list-check text-acrm-orange mr-2"></i>
+                        Current & Past Assignments
+                    </h3>
+                </div>
+                <div id="assignmentsList" class="space-y-3">
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-inbox text-4xl mb-3 opacity-50"></i>
+                        <p>Loading assignments...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="resourcesTab" class="hidden space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                    <div>
+                        <h3 class="text-lg font-semibold text-acrm-navy mb-1">
+                            <i class="fas fa-file-pdf text-acrm-orange mr-2"></i>
+                            Course Materials
+                        </h3>
+                        <p class="text-sm text-gray-500">Browse chapter wise uploads shared by your faculty</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <p class="text-xs text-gray-500">Tip: double-click a chapter to open it</p>
+                        <button id="studentBackToChaptersBtn" class="hidden px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition text-sm font-medium">
+                            <i class="fas fa-arrow-left mr-2"></i>Back to Chapters
+                        </button>
+                    </div>
+                </div>
+                <div id="studentResourceMessage" class="hidden text-sm rounded-lg px-3 py-2"></div>
+                <div id="studentChapterList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="col-span-full border border-dashed border-gray-300 rounded-lg p-6 text-center text-gray-500">
+                        <p>Subject resources will appear here once shared.</p>
+                    </div>
+                </div>
+                <div id="studentChapterDetail" class="hidden space-y-3">
+                    <div class="bg-white border border-gray-200 rounded-lg p-4">
+                        <h4 id="studentActiveChapterTitle" class="text-xl font-bold text-acrm-navy">Chapter</h4>
+                        <p id="studentActiveChapterMeta" class="text-sm text-gray-500"></p>
+                    </div>
+                    <div id="studentChapterResources" class="space-y-3 bg-white border border-gray-200 rounded-lg p-4">
+                        <p class="text-gray-500 text-center py-6">Select a chapter to view its resources.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentSubject = null;
+let activeSubjectDbId = null;
+let studentChapters = [];
+let activeStudentChapterId = null;
+
+function showStudentChapterListView() {
+    const list = document.getElementById('studentChapterList');
+    const detail = document.getElementById('studentChapterDetail');
+    const backBtn = document.getElementById('studentBackToChaptersBtn');
+    if (detail) {
+        detail.classList.add('hidden');
+    }
+    if (list) {
+        list.classList.remove('hidden');
+    }
+    if (backBtn) {
+        backBtn.classList.add('hidden');
+    }
+}
+
+function showStudentChapterDetailView() {
+    const list = document.getElementById('studentChapterList');
+    const detail = document.getElementById('studentChapterDetail');
+    const backBtn = document.getElementById('studentBackToChaptersBtn');
+    if (list) {
+        list.classList.add('hidden');
+    }
+    if (detail) {
+        detail.classList.remove('hidden');
+    }
+    if (backBtn) {
+        backBtn.classList.remove('hidden');
+    }
+}
+
+async function loadSubjects() {
+    try {
+        const response = await fetch('/student/api/subjects');
+        const data = await response.json();
+        
+        if (response.ok && data.subjects.length > 0) {
+            renderSubjects(data.subjects);
+        } else {
+            document.getElementById('subjectsList').innerHTML = `
+                <div class="col-span-full text-center py-12">
+                    <i class="fas fa-inbox text-5xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-500 text-lg">No subjects enrolled</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading subjects:', error);
+        document.getElementById('subjectsList').innerHTML = `
+            <div class="col-span-full text-center py-12 text-red-500">
+                <i class="fas fa-exclamation-circle text-5xl mb-4"></i>
+                <p>Error loading subjects. Please refresh the page.</p>
+            </div>
+        `;
+    }
+}
+
+function renderSubjects(subjects) {
+    const container = document.getElementById('subjectsList');
+    container.innerHTML = '';
+
+    const subjectIcons = {
+        'Data Structures': 'fa-code',
+        'Signals & Systems': 'fa-wave-square',
+        'Engineering Thermodynamics': 'fa-fire',
+        'Civil Design': 'fa-building',
+        'Mathematics': 'fa-square-root-alt',
+        'Science': 'fa-flask',
+        'English': 'fa-book-open',
+        'Computer Science': 'fa-laptop'
+    };
+
+    const subjectColors = {
+        'Data Structures': 'from-blue-500 to-blue-600',
+        'Signals & Systems': 'from-purple-500 to-purple-600',
+        'Engineering Thermodynamics': 'from-red-500 to-red-600',
+        'Civil Design': 'from-yellow-500 to-yellow-600',
+        'Mathematics': 'from-green-500 to-green-600',
+        'Science': 'from-orange-500 to-orange-600',
+        'English': 'from-pink-500 to-pink-600',
+        'Computer Science': 'from-indigo-500 to-indigo-600'
+    };
+
+    subjects.forEach(subject => {
+        const subjectName = subject.subject || subject.name || subject.subject_code || 'Subject';
+        const icon = subjectIcons[subjectName] || 'fa-book';
+        const color = subjectColors[subjectName] || 'from-acrm-orange to-orange-600';
+        const facultyLabel = subject.faculty_name || (subject.subject_type === 'semester' ? 'Semester faculty not assigned yet' : 'Faculty not available');
+        const contextLabel = subject.scope_label || subject.class_name || subject.program_name || 'Direct Subject';
+        const badgeLabel = subject.subject_type === 'semester'
+            ? 'Semester Subject'
+            : subject.subject_type === 'student'
+                ? 'Direct Subject'
+                : 'Classroom Subject';
+        const resourceLine = (subject.resource_count && subject.resource_count > 0)
+            ? `<p class="text-xs text-gray-500 flex items-center"><i class="fas fa-folder-open text-acrm-orange mr-2 w-4"></i>${subject.resource_count} resource${subject.resource_count === 1 ? '' : 's'}</p>`
+            : '';
+
+        const card = document.createElement('div');
+        card.className = `bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer transition hover:shadow-xl transform hover:-translate-y-1`;
+        card.onclick = () => openSubjectDetail(subject);
+        
+        card.innerHTML = `
+            <div class="h-32 bg-gradient-to-br ${color} flex items-center justify-center relative overflow-hidden">
+                <div class="absolute inset-0 opacity-20">
+                    <div class="absolute -top-8 -right-8 w-32 h-32 bg-white rounded-full"></div>
+                    <div class="absolute -bottom-8 -left-8 w-24 h-24 bg-white rounded-full"></div>
+                </div>
+                <i class="fas ${icon} text-white text-5xl relative z-10"></i>
+            </div>
+            <div class="p-6">
+                <div class="flex items-center justify-between text-xs uppercase tracking-wide">
+                    <span class="px-2 py-1 rounded-full bg-acrm-orange text-white font-semibold">${badgeLabel}</span>
+                    ${subject.subject_code ? `<span class="text-gray-400">${subject.subject_code}</span>` : ''}
+                </div>
+                <h3 class="text-xl font-bold text-acrm-navy">${subjectName}</h3>
+                <div class="space-y-2 mb-4">
+                    <p class="text-sm text-gray-600 flex items-center">
+                        <i class="fas fa-chalkboard-user text-acrm-orange mr-2 w-4"></i>
+                        <span class="font-medium">${facultyLabel}</span>
+                    </p>
+                    <p class="text-sm text-gray-600 flex items-center">
+                        <i class="fas fa-layer-group text-acrm-orange mr-2 w-4"></i>
+                        <span>${contextLabel}</span>
+                    </p>
+                    ${resourceLine}
+                </div>
+                <button class="w-full bg-acrm-orange text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition">
+                    View Details
+                </button>
+            </div>
+        `;
+        
+        container.appendChild(card);
+    });
+}
+
+async function openSubjectDetail(subject) {
+    currentSubject = subject;
+    
+    // Update header
+    const subjectName = subject.subject || subject.name || subject.subject_code || 'Subject';
+    document.getElementById('modalSubjectName').textContent = subjectName;
+    const teacherInfo = [
+        subject.faculty_name ? `<i class="fas fa-chalkboard-user mr-2"></i>${subject.faculty_name}` : '<i class="fas fa-user-clock mr-2"></i>Faculty not assigned',
+        subject.class_name ? subject.class_name : null,
+        subject.program_name ? subject.program_name : null,
+        subject.subject_code ? `Code: ${subject.subject_code}` : null
+    ].filter(Boolean).join(' • ');
+    document.getElementById('modalTeacherInfo').innerHTML = teacherInfo;
+
+    const badgeLabel = subject.subject_type === 'semester'
+        ? 'Semester Subject'
+        : subject.subject_type === 'student'
+            ? 'Direct Subject'
+            : 'Classroom Subject';
+    document.getElementById('modalBadgeLabel').textContent = badgeLabel;
+    document.getElementById('modalSubjectCode').textContent = subject.subject_code ? `Code: ${subject.subject_code}` : '';
+
+    const metaItems = [
+        subject.program_name ? `<span class="inline-flex items-center gap-1"><i class="fas fa-graduation-cap text-acrm-orange"></i>${subject.program_name}</span>` : null,
+        subject.class_name ? `<span class="inline-flex items-center gap-1"><i class="fas fa-layer-group text-acrm-orange"></i>${subject.class_name}</span>` : null,
+        subject.scope_label ? `<span class="inline-flex items-center gap-1"><i class="fas fa-users text-acrm-orange"></i>${subject.scope_label}</span>` : null
+    ].filter(Boolean).join('');
+    document.getElementById('subjectMetaStrip').innerHTML = metaItems || '<span class="text-gray-400">No additional class details</span>';
+
+    activeSubjectDbId = subject.subject_db_id || null;
+    studentChapters = [];
+    activeStudentChapterId = null;
+    resetStudentResourceView();
+    if (activeSubjectDbId) {
+        loadStudentChapters(activeSubjectDbId);
+    } else {
+        showStudentResourceMessage('Resources are not available for this subject yet.', 'info');
+    }
+
+    // Reset to assignments tab
+    document.getElementById('assignmentsTab').classList.remove('hidden');
+    document.getElementById('resourcesTab').classList.add('hidden');
+    activateStudentTab('assignments');
+
+    updateResourceTab(subject);
+
+    if (subject.class_faculty_id) {
+        document.getElementById('assignmentsTabBtn').disabled = false;
+        document.getElementById('assignmentsTabBtn').classList.remove('opacity-50');
+        loadSubjectAssignments(subject.class_faculty_id);
+    } else {
+        document.getElementById('assignmentsTabBtn').disabled = true;
+        document.getElementById('assignmentsTabBtn').classList.add('opacity-50');
+        document.getElementById('assignmentsList').innerHTML = `
+            <div class="text-center py-8 text-gray-500">
+                <i class="fas fa-info-circle text-3xl opacity-50 mb-2"></i>
+                <p>Assignments are not available for this subject.</p>
+            </div>
+        `;
+    }
+
+    document.getElementById('subjectsView').classList.add('hidden');
+    document.getElementById('subjectDetailView').classList.remove('hidden');
+}
+
+async function loadSubjectAssignments(classFacultyId) {
+    if (!classFacultyId) {
+        return;
+    }
+    const listContainer = document.getElementById('assignmentsList');
+    listContainer.innerHTML = '<div class="text-center py-4 text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</div>';
+
+    try {
+        const response = await fetch(`/student/api/subject/${classFacultyId}/assignments`);
+        const data = await response.json();
+        
+        if (response.ok && data.assignments && data.assignments.length > 0) {
+            renderAssignments(data.assignments);
+        } else {
+            listContainer.innerHTML = `
+                <div class="text-center py-8 text-gray-500">
+                    <i class="fas fa-inbox text-3xl opacity-50 mb-2"></i>
+                    <p>No assignments yet</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading assignments:', error);
+        listContainer.innerHTML = `
+            <div class="text-center py-4 text-red-500">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                Error loading assignments
+            </div>
+        `;
+    }
+}
+
+function updateResourceTab(subject) {
+    if (!subject) {
+        showStudentResourceMessage('', 'info');
+        return;
+    }
+    const count = subject.resource_count || 0;
+    if (!count) {
+        showStudentResourceMessage('No resources uploaded yet for this subject.', 'info');
+    } else {
+        showStudentResourceMessage(`${count} resource${count === 1 ? '' : 's'} shared so far.`, 'success');
+    }
+}
+
+function resetStudentResourceView() {
+    showStudentResourceMessage('', 'info');
+    showStudentChapterListView();
+    const list = document.getElementById('studentChapterList');
+    const detailResources = document.getElementById('studentChapterResources');
+    if (detailResources) {
+        detailResources.innerHTML = `<p class="text-gray-500 text-center py-6">Select a chapter to view its resources.</p>`;
+    }
+    if (!activeSubjectDbId) {
+        list.innerHTML = `
+            <div class="col-span-full border border-dashed border-gray-300 rounded-lg p-6 text-center text-gray-500">
+                <p>This subject is not linked to the shared resource library yet.</p>
+            </div>
+        `;
+    } else {
+        list.innerHTML = `
+            <div class="col-span-full border border-dashed border-gray-300 rounded-lg p-6 text-center text-gray-500">
+                <p>Loading chapters...</p>
+            </div>
+        `;
+    }
+}
+
+function loadStudentChapters(subjectDbId) {
+    fetch(`/student/api/subjects/${subjectDbId}/chapters`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            studentChapters = data.chapters || [];
+            renderStudentChapters();
+        })
+        .catch(() => {
+            showStudentResourceMessage('Unable to load chapters right now.', 'error');
+            const list = document.getElementById('studentChapterList');
+            list.innerHTML = `
+                <div class="col-span-full border border-red-200 bg-red-50 rounded-lg p-6 text-red-700">
+                    <p class="font-semibold">Something went wrong.</p>
+                    <p class="text-sm">Please refresh the page.</p>
+                </div>
+            `;
+        });
+}
+
+function renderStudentChapters() {
+    const container = document.getElementById('studentChapterList');
+    container.innerHTML = '';
+    if (!studentChapters.length) {
+        container.innerHTML = `
+            <div class="col-span-full border border-dashed border-gray-300 rounded-lg p-6 text-center text-gray-500">
+                <p>No chapters published yet.</p>
+                <p class="text-sm mt-1">Your faculty will share resources here once ready.</p>
+            </div>
+        `;
+        return;
+    }
+
+    studentChapters.forEach(chapter => {
+        const card = document.createElement('div');
+        card.className = 'bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition cursor-pointer select-none';
+        card.innerHTML = `
+            <div class="flex items-center justify-between text-sm text-gray-500 mb-2">
+                <span class="font-semibold text-acrm-orange">${chapter.chapter_number ? `Chapter ${chapter.chapter_number}` : 'Section'}</span>
+                <span>${chapter.resource_count || 0} items</span>
+            </div>
+            <h4 class="text-lg font-bold text-acrm-navy mb-1">${chapter.chapter_name}</h4>
+            <p class="text-sm text-gray-600">${chapter.description || 'No description provided yet.'}</p>
+            <p class="text-xs text-gray-400 mt-2"><i class="fas fa-mouse-pointer mr-1"></i>Double-click to open</p>
+        `;
+        card.addEventListener('dblclick', () => openStudentChapter(chapter.id));
+        container.appendChild(card);
+    });
+}
+
+function openStudentChapter(chapterId) {
+    fetch(`/student/api/chapters/${chapterId}/resources`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            activeStudentChapterId = chapterId;
+            const chapter = studentChapters.find(ch => ch.id === chapterId) || data.chapter;
+            if (chapter) {
+                document.getElementById('studentActiveChapterTitle').textContent = chapter.chapter_name;
+                const label = chapter.chapter_number ? `Chapter ${chapter.chapter_number}` : 'Custom section';
+                const resourceLabel = `${(data.resources || []).length} resource${(data.resources || []).length === 1 ? '' : 's'}`;
+                document.getElementById('studentActiveChapterMeta').textContent = `${label} • ${resourceLabel}`;
+            }
+            showStudentChapterDetailView();
+            renderStudentChapterResources(data.resources || []);
+        })
+        .catch(() => {
+            showStudentResourceMessage('Unable to open that chapter right now.', 'error');
+        });
+}
+
+function renderStudentChapterResources(resources) {
+    const container = document.getElementById('studentChapterResources');
+    if (!resources.length) {
+        container.innerHTML = `
+            <div class="text-center text-gray-500 py-6">
+                <p>No resources have been shared for this chapter yet.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = resources.map(resource => `
+        <div class="border border-gray-200 rounded-lg p-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+                <p class="font-semibold text-acrm-navy">${resource.title}</p>
+                <p class="text-sm text-gray-600">${resource.description || 'No description shared'}</p>
+                <p class="text-xs text-gray-400 mt-1">Uploaded ${new Date(resource.uploaded_at).toLocaleString()}</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <a class="px-3 py-2 text-sm bg-acrm-orange text-white rounded-lg hover:bg-orange-600 inline-flex items-center" href="${resource.download_url}">
+                    <i class="fas fa-download mr-2"></i>Download
+                </a>
+            </div>
+        </div>
+    `).join('');
+}
+
+function showStudentResourceMessage(message, type = 'info') {
+    const box = document.getElementById('studentResourceMessage');
+    if (!box) {
+        return;
+    }
+    if (!message) {
+        box.classList.add('hidden');
+        return;
+    }
+    const palette = type === 'error'
+        ? 'bg-red-100 border border-red-200 text-red-800'
+        : type === 'success'
+            ? 'bg-green-100 border border-green-200 text-green-800'
+            : 'bg-gray-100 border border-gray-200 text-gray-700';
+    box.className = `${palette} text-sm rounded-lg px-3 py-2`;
+    box.textContent = message;
+    box.classList.remove('hidden');
+}
+
+function renderAssignments(assignments) {
+    const listContainer = document.getElementById('assignmentsList');
+    listContainer.innerHTML = '';
+
+    assignments.forEach(assignment => {
+        const dueDate = new Date(assignment.due_date);
+        const isOverdue = dueDate < new Date() && assignment.status === 'active';
+        const isClosing = (dueDate - new Date()) < 24 * 60 * 60 * 1000 && assignment.status === 'active';
+
+        const card = document.createElement('div');
+        card.className = `p-4 rounded-lg border-2 transition cursor-pointer ${
+            isOverdue ? 'border-red-400 bg-red-50' : 
+            isClosing ? 'border-orange-400 bg-orange-50' :
+            assignment.status === 'closed' ? 'border-gray-300 bg-gray-50' :
+            'border-blue-400 bg-blue-50'
+        }`;
+
+        card.innerHTML = `
+            <div class="flex justify-between items-start mb-2">
+                <h4 class="font-semibold text-acrm-navy flex-1">${assignment.title}</h4>
+                <span class="px-2 py-1 rounded text-xs font-semibold ${
+                    isOverdue ? 'bg-red-200 text-red-800' :
+                    isClosing ? 'bg-orange-200 text-orange-800' :
+                    assignment.status === 'closed' ? 'bg-gray-200 text-gray-800' :
+                    'bg-blue-200 text-blue-800'
+                }">
+                    ${assignment.status === 'closed' ? 'Closed' : isOverdue ? 'Overdue' : 'Active'}
+                </span>
+            </div>
+            <p class="text-sm text-gray-700 mb-2">${assignment.description || 'No description provided'}</p>
+            <div class="flex items-center justify-between text-sm">
+                <div class="flex items-center text-gray-600">
+                    <i class="fas fa-calendar text-acrm-orange mr-2"></i>
+                    <span>Due: ${dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
+                <i class="fas fa-chevron-right text-acrm-orange opacity-50"></i>
+            </div>
+        `;
+
+        listContainer.appendChild(card);
+    });
+}
+
+function activateStudentTab(tabName) {
+    const assignmentsBtn = document.getElementById('assignmentsTabBtn');
+    const resourcesBtn = document.getElementById('resourcesTabBtn');
+    const activeClasses = ['border-acrm-orange', 'text-acrm-navy'];
+    const inactiveClasses = ['border-transparent', 'text-gray-600'];
+    if (!assignmentsBtn || !resourcesBtn) {
+        return;
+    }
+    if (tabName === 'assignments') {
+        assignmentsBtn.classList.add(...activeClasses);
+        assignmentsBtn.classList.remove(...inactiveClasses);
+        resourcesBtn.classList.add(...inactiveClasses);
+        resourcesBtn.classList.remove(...activeClasses);
+    } else {
+        resourcesBtn.classList.add(...activeClasses);
+        resourcesBtn.classList.remove(...inactiveClasses);
+        assignmentsBtn.classList.add(...inactiveClasses);
+        assignmentsBtn.classList.remove(...activeClasses);
+    }
+}
+
+// Detail view controls
+document.getElementById('assignmentsTabBtn').addEventListener('click', () => {
+    document.getElementById('assignmentsTab').classList.remove('hidden');
+    document.getElementById('resourcesTab').classList.add('hidden');
+    activateStudentTab('assignments');
+});
+
+document.getElementById('resourcesTabBtn').addEventListener('click', () => {
+    document.getElementById('assignmentsTab').classList.add('hidden');
+    document.getElementById('resourcesTab').classList.remove('hidden');
+    activateStudentTab('resources');
+});
+
+const studentBackToChaptersBtn = document.getElementById('studentBackToChaptersBtn');
+if (studentBackToChaptersBtn) {
+    studentBackToChaptersBtn.addEventListener('click', () => {
+        activeStudentChapterId = null;
+        showStudentChapterListView();
+        const resourcesContainer = document.getElementById('studentChapterResources');
+        if (resourcesContainer) {
+            resourcesContainer.innerHTML = `
+                <p class="text-gray-500 text-center py-6">Select a chapter to view its resources.</p>
+            `;
+        }
+    });
+}
+
+document.getElementById('closeDetailBtn').addEventListener('click', () => {
+    document.getElementById('subjectDetailView').classList.add('hidden');
+    document.getElementById('subjectsView').classList.remove('hidden');
+    currentSubject = null;
+    activeSubjectDbId = null;
+    studentChapters = [];
+    activeStudentChapterId = null;
+    resetStudentResourceView();
+});
+
+// Load subjects on page load
+document.addEventListener('DOMContentLoaded', loadSubjects);
+</script>
+{% endblock %}

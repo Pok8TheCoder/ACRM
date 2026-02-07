@@ -1,0 +1,250 @@
+{% extends "student/layout.html" %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Welcome Section -->
+    <div class="bg-white rounded-lg shadow p-6 flex items-center space-x-6">
+        <div class="w-16 h-16 bg-gradient-to-br from-acrm-orange to-orange-600 rounded-full flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-user text-white text-2xl"></i>
+        </div>
+        <div>
+            <h1 class="text-3xl font-bold text-acrm-navy">Welcome, {{ session.get('user_name', 'Student') }}</h1>
+            <p class="text-gray-600">Here is your academic overview.</p>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Assignments Due -->
+        <div class="bg-white rounded-lg shadow p-6 cursor-pointer transition hover:shadow-lg group" id="assignmentsDueCard">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <p class="text-gray-600 text-sm">Assignments Due</p>
+                    <p class="text-4xl font-bold text-acrm-navy">2</p>
+                </div>
+                <i class="fas fa-tasks text-acrm-orange text-3xl opacity-70 group-hover:opacity-100 transition"></i>
+            </div>
+            <p class="text-xs text-gray-500">in the next 7 days</p>
+            
+            <!-- Hover Tooltip -->
+            <div id="assignmentsTooltip" class="hidden absolute bg-white border-2 border-acrm-orange rounded-lg shadow-xl p-4 w-64 z-50" style="top: 0; left: 0;">
+                <p class="font-semibold text-acrm-navy mb-3 flex items-center">
+                    <i class="fas fa-tasks text-acrm-orange mr-2"></i> Upcoming Assignments
+                </p>
+                <div class="space-y-2">
+                    <div class="p-2 bg-orange-50 rounded border-l-4 border-acrm-orange">
+                        <p class="font-medium text-sm text-acrm-navy">Mathematics: Calculus Problem Set</p>
+                        <p class="text-xs text-gray-600">Due: Nov 25, 2025</p>
+                    </div>
+                    <div class="p-2 bg-orange-50 rounded border-l-4 border-acrm-orange">
+                        <p class="font-medium text-sm text-acrm-navy">Science: Lab Report</p>
+                        <p class="text-xs text-gray-600">Due: Nov 27, 2025</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completed Assignments -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <p class="text-gray-600 text-sm">Completed Assignments</p>
+                    <p class="text-4xl font-bold text-acrm-navy">12</p>
+                </div>
+                <i class="fas fa-check-circle text-green-500 text-3xl opacity-70"></i>
+            </div>
+            <p class="text-xs text-gray-500">this semester</p>
+        </div>
+
+        <!-- Overall Attendance -->
+        <div class="bg-white rounded-lg shadow p-6 cursor-pointer transition hover:shadow-lg group" id="attendanceCard">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <p class="text-gray-600 text-sm">Overall Attendance</p>
+                    <p class="text-4xl font-bold text-acrm-navy">88%</p>
+                </div>
+                <i class="fas fa-chart-pie text-blue-500 text-3xl opacity-70 group-hover:opacity-100 transition"></i>
+            </div>
+            <p class="text-xs text-gray-500">130 out of 148 classes</p>
+
+            <!-- Hover Tooltip -->
+            <div id="attendanceTooltip" class="hidden absolute bg-white border-2 border-blue-500 rounded-lg shadow-xl p-4 w-80 z-50" style="top: 0; left: 0;">
+                <p class="font-semibold text-acrm-navy mb-3 flex items-center">
+                    <i class="fas fa-chart-pie text-blue-500 mr-2"></i> Overall Attendance
+                </p>
+                <div class="mb-3">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="text-gray-700">Total Classes: <strong>148</strong></span>
+                        <span class="text-gray-700">Attended: <strong>130</strong></span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-blue-500 h-2 rounded-full" style="width: 88%"></div>
+                    </div>
+                </div>
+                <p class="text-xs text-blue-600 cursor-pointer hover:text-blue-800 font-medium" id="viewSubjectWise">
+                    → Click to view subject-wise attendance
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subject-wise Attendance (Hidden by default) -->
+    <div id="subjectWiseAttendance" class="hidden bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-acrm-navy flex items-center">
+                <button id="backToOverall" class="mr-3 p-1 hover:bg-gray-100 rounded">
+                    <i class="fas fa-arrow-left text-gray-600"></i>
+                </button>
+                Subject-wise Attendance Breakdown
+            </h3>
+        </div>
+
+        <div class="space-y-4">
+            <!-- Subject 1 -->
+            <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="font-semibold text-acrm-navy">Mathematics</h4>
+                    <span class="text-2xl font-bold text-acrm-orange">92%</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="flex-1">
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-acrm-orange h-2 rounded-full" style="width: 92%"></div>
+                        </div>
+                    </div>
+                    <span class="text-sm text-gray-600 min-w-fit">35/38 classes</span>
+                </div>
+            </div>
+
+            <!-- Subject 2 -->
+            <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="font-semibold text-acrm-navy">Science</h4>
+                    <span class="text-2xl font-bold text-acrm-orange">85%</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="flex-1">
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-acrm-orange h-2 rounded-full" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    <span class="text-sm text-gray-600 min-w-fit">34/40 classes</span>
+                </div>
+            </div>
+
+            <!-- Subject 3 -->
+            <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="font-semibold text-acrm-navy">English</h4>
+                    <span class="text-2xl font-bold text-acrm-orange">88%</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="flex-1">
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-acrm-orange h-2 rounded-full" style="width: 88%"></div>
+                        </div>
+                    </div>
+                    <span class="text-sm text-gray-600 min-w-fit">35/40 classes</span>
+                </div>
+            </div>
+
+            <!-- Subject 4 -->
+            <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="font-semibold text-acrm-navy">Computer Science</h4>
+                    <span class="text-2xl font-bold text-acrm-orange">82%</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="flex-1">
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-acrm-orange h-2 rounded-full" style="width: 82%"></div>
+                        </div>
+                    </div>
+                    <span class="text-sm text-gray-600 min-w-fit">26/30 classes</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Assignments -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-bold text-acrm-navy mb-4">Recent Assignments</h3>
+        <div class="space-y-3">
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                <div>
+                    <p class="font-semibold text-acrm-navy">Calculus Problem Set 5</p>
+                    <p class="text-sm text-gray-600">Mathematics • Due Nov 25</p>
+                </div>
+                <span class="px-3 py-1 bg-orange-100 text-acrm-orange rounded-full text-sm font-medium">Pending</span>
+            </div>
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                <div>
+                    <p class="font-semibold text-acrm-navy">Lab Report: Chemistry Experiment</p>
+                    <p class="text-sm text-gray-600">Science • Due Nov 27</p>
+                </div>
+                <span class="px-3 py-1 bg-orange-100 text-acrm-orange rounded-full text-sm font-medium">Pending</span>
+            </div>
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                <div>
+                    <p class="font-semibold text-acrm-navy">Essay: Modern Literature Analysis</p>
+                    <p class="text-sm text-gray-600">English • Submitted Nov 20</p>
+                </div>
+                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">Submitted</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const assignmentsDueCard = document.getElementById('assignmentsDueCard');
+    const assignmentsTooltip = document.getElementById('assignmentsTooltip');
+    const attendanceCard = document.getElementById('attendanceCard');
+    const attendanceTooltip = document.getElementById('attendanceTooltip');
+    const subjectWiseAttendance = document.getElementById('subjectWiseAttendance');
+    const viewSubjectWise = document.getElementById('viewSubjectWise');
+    const backToOverall = document.getElementById('backToOverall');
+
+    // Assignments Due Tooltip
+    assignmentsDueCard.addEventListener('mouseenter', function() {
+        const rect = assignmentsDueCard.getBoundingClientRect();
+        assignmentsTooltip.style.top = (rect.top + window.scrollY) + 'px';
+        assignmentsTooltip.style.left = (rect.right + 20) + 'px';
+        assignmentsTooltip.classList.remove('hidden');
+    });
+
+    assignmentsDueCard.addEventListener('mouseleave', function() {
+        assignmentsTooltip.classList.add('hidden');
+    });
+
+    // Attendance Tooltip
+    attendanceCard.addEventListener('mouseenter', function() {
+        const rect = attendanceCard.getBoundingClientRect();
+        attendanceTooltip.style.top = (rect.top + window.scrollY) + 'px';
+        attendanceTooltip.style.left = (rect.left - 320) + 'px';
+        attendanceTooltip.classList.remove('hidden');
+    });
+
+    attendanceCard.addEventListener('mouseleave', function() {
+        attendanceTooltip.classList.add('hidden');
+    });
+
+    // View Subject-wise Attendance
+    viewSubjectWise.addEventListener('click', function() {
+        attendanceTooltip.classList.add('hidden');
+        document.querySelector('.grid').classList.add('hidden');
+        document.querySelector('.space-y-6 > div:nth-child(2)').classList.add('hidden');
+        subjectWiseAttendance.classList.remove('hidden');
+    });
+
+    // Back to Overall
+    backToOverall.addEventListener('click', function() {
+        subjectWiseAttendance.classList.add('hidden');
+        document.querySelector('.grid').classList.remove('hidden');
+        document.querySelector('.space-y-6 > div:nth-child(2)').classList.remove('hidden');
+    });
+});
+</script>
+{% endblock %}

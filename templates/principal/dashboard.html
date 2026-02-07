@@ -1,0 +1,406 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-acrm-dark-navy via-black to-acrm-dark-navy">
+    <!-- Header -->
+    <div class="bg-black bg-opacity-50 border-b border-acrm-orange border-opacity-30">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl font-bold text-white mb-2">Master Admin Dashboard</h1>
+                    <p class="text-gray-400">Welcome, <span class="text-acrm-orange font-semibold">{{ principal_name }}</span></p>
+                </div>
+                <div class="text-right">
+                    <p class="text-gray-400 text-sm mb-2">Institution: <span class="text-acrm-orange">IIT Delhi</span></p>
+                    <button id="logoutBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 py-12">
+        <!-- Stats Section -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <!-- Total Admins -->
+            <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg p-6 border border-gray-700 hover:border-acrm-orange transition">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm mb-1">Total Admins</p>
+                        <p class="text-3xl font-bold text-white" id="totalAdmins">0</p>
+                    </div>
+                    <svg class="h-12 w-12 text-acrm-orange opacity-30" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Can Create Admins -->
+            <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg p-6 border border-gray-700 hover:border-acrm-orange transition">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm mb-1">Create Admins</p>
+                        <p class="text-3xl font-bold text-acrm-orange" id="canCreateAdmins">0</p>
+                    </div>
+                    <svg class="h-12 w-12 text-acrm-orange opacity-30" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Can Create Students -->
+            <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg p-6 border border-gray-700 hover:border-acrm-orange transition">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm mb-1">Create Students</p>
+                        <p class="text-3xl font-bold text-acrm-orange" id="canCreateStudents">0</p>
+                    </div>
+                    <svg class="h-12 w-12 text-acrm-orange opacity-30" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Can Create Faculty -->
+            <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg p-6 border border-gray-700 hover:border-acrm-orange transition">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm mb-1">Create Faculty</p>
+                        <p class="text-3xl font-bold text-acrm-orange" id="canCreateFaculty">0</p>
+                    </div>
+                    <svg class="h-12 w-12 text-acrm-orange opacity-30" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Admin Management Section -->
+            <div class="lg:col-span-2">
+                <!-- Create New Admin -->
+                <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg p-6 border border-gray-700 mb-8">
+                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                        <svg class="h-6 w-6 text-acrm-orange" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"></path>
+                        </svg>
+                        Create New Admin
+                    </h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <input 
+                            type="text" 
+                            id="adminId" 
+                            placeholder="Admin ID (e.g., ADM002)" 
+                            class="w-full px-4 py-3 bg-gray-700 border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-acrm-orange"
+                        >
+                        <input 
+                            type="text" 
+                            id="adminName" 
+                            placeholder="Full Name" 
+                            class="w-full px-4 py-3 bg-gray-700 border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-acrm-orange"
+                        >
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <input 
+                            type="email" 
+                            id="adminEmail" 
+                            placeholder="Email Address" 
+                            class="w-full px-4 py-3 bg-gray-700 border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-acrm-orange"
+                        >
+                        <input 
+                            type="password" 
+                            id="adminPassword" 
+                            placeholder="Password" 
+                            class="w-full px-4 py-3 bg-gray-700 border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-acrm-orange"
+                        >
+                    </div>
+
+                    <!-- Permissions -->
+                    <div class="mb-4 p-4 bg-gray-700 bg-opacity-50 rounded-lg">
+                        <p class="text-gray-300 font-semibold mb-3">Admin Permissions:</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" id="permCreateAdmins" class="w-4 h-4 accent-acrm-orange">
+                                <span class="text-gray-300">Can create other admins</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" id="permCreateStudents" class="w-4 h-4 accent-acrm-orange">
+                                <span class="text-gray-300">Can create students</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" id="permCreateFaculty" class="w-4 h-4 accent-acrm-orange">
+                                <span class="text-gray-300">Can create faculty</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button 
+                        id="createAdminBtn" 
+                        class="w-full bg-acrm-orange hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition flex items-center justify-center gap-2"
+                    >
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"></path>
+                        </svg>
+                        Create Admin
+                    </button>
+
+                    <div id="createAdminMessage" class="hidden mt-4 p-3 rounded-lg"></div>
+                </div>
+
+                <!-- Admins List -->
+                <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg p-6 border border-gray-700">
+                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                        <svg class="h-6 w-6 text-acrm-orange" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+                        </svg>
+                        Manage Admins
+                    </h2>
+
+                    <div id="adminsList" class="space-y-3">
+                        <p class="text-gray-400 text-center py-8">Loading admins...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions Sidebar -->
+            <div>
+                <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg p-6 border border-gray-700 sticky top-4">
+                    <h3 class="text-xl font-bold text-white mb-4">Quick Actions</h3>
+                    <div class="space-y-3">
+                        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition text-sm font-semibold">
+                            View Reports
+                        </button>
+                        <button class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition text-sm font-semibold">
+                            Institution Settings
+                        </button>
+                        <button class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg transition text-sm font-semibold">
+                            System Logs
+                        </button>
+                        <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg transition text-sm font-semibold">
+                            Backup Data
+                        </button>
+                    </div>
+
+                    <!-- System Info -->
+                    <div class="mt-8 p-4 bg-gray-700 bg-opacity-50 rounded-lg border border-gray-600">
+                        <p class="text-xs text-gray-400 mb-3 font-semibold">SYSTEM INFO</p>
+                        <div class="space-y-2 text-xs">
+                            <p><span class="text-gray-500">Status:</span> <span class="text-green-400">Online</span></p>
+                            <p><span class="text-gray-500">Version:</span> <span class="text-gray-300">1.0.0</span></p>
+                            <p><span class="text-gray-500">Last Sync:</span> <span class="text-gray-300">Just now</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Admin Details -->
+<div id="adminModal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+    <div class="bg-gray-800 rounded-lg p-8 max-w-md w-full border border-gray-700">
+        <h2 id="modalTitle" class="text-2xl font-bold text-white mb-4">Admin Details</h2>
+        
+        <div id="modalContent" class="space-y-4 mb-6">
+            <!-- Content populated dynamically -->
+        </div>
+
+        <div class="flex gap-3">
+            <button id="resetPasswordBtn" class="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded-lg transition font-semibold">
+                Reset Password
+            </button>
+            <button id="deleteAdminBtn" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg transition font-semibold">
+                Delete Admin
+            </button>
+            <button id="closeModalBtn" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg transition font-semibold">
+                Close
+            </button>
+        </div>
+
+        <div id="modalMessage" class="hidden mt-4 p-3 rounded-lg text-sm"></div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let selectedAdminId = null;
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/logout';
+        document.body.appendChild(form);
+        form.submit();
+    });
+
+    // Load stats
+    function loadStats() {
+        fetch('/api/principal/admin-stats')
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('totalAdmins').textContent = data.total_admins;
+                document.getElementById('canCreateAdmins').textContent = data.can_create_admins;
+                document.getElementById('canCreateStudents').textContent = data.can_create_students;
+                document.getElementById('canCreateFaculty').textContent = data.can_create_faculty;
+            })
+            .catch(e => console.error('Error loading stats:', e));
+    }
+
+    // Load admins list
+    function loadAdmins() {
+        fetch('/api/principal/admins')
+            .then(r => r.json())
+            .then(data => {
+                const adminsList = document.getElementById('adminsList');
+                if (data.admins.length === 0) {
+                    adminsList.innerHTML = '<p class="text-gray-400 text-center py-8">No admins yet</p>';
+                    return;
+                }
+
+                adminsList.innerHTML = data.admins.map(admin => `
+                    <div class="bg-gray-700 p-4 rounded-lg border border-gray-600 hover:border-acrm-orange transition cursor-pointer" onclick="window.showAdminModal('${admin.admin_id}', '${admin.name}', '${admin.email}')">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-semibold text-white">${admin.name}</p>
+                                <p class="text-xs text-gray-400">${admin.admin_id}</p>
+                            </div>
+                            <div class="text-right text-xs">
+                                <p class="text-gray-400">${admin.email}</p>
+                                <p class="text-gray-500 mt-1">${new Date(admin.created_date).toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                        <div class="mt-2 flex gap-2 flex-wrap">
+                            ${admin.can_create_admins ? '<span class="text-xs bg-blue-600 text-white px-2 py-1 rounded">Create Admins</span>' : ''}
+                            ${admin.can_create_students ? '<span class="text-xs bg-green-600 text-white px-2 py-1 rounded">Create Students</span>' : ''}
+                            ${admin.can_create_faculty ? '<span class="text-xs bg-purple-600 text-white px-2 py-1 rounded">Create Faculty</span>' : ''}
+                        </div>
+                    </div>
+                `).join('');
+            })
+            .catch(e => console.error('Error loading admins:', e));
+    }
+
+    // Create new admin
+    document.getElementById('createAdminBtn').addEventListener('click', function() {
+        const adminId = document.getElementById('adminId').value.trim();
+        const name = document.getElementById('adminName').value.trim();
+        const email = document.getElementById('adminEmail').value.trim();
+        const password = document.getElementById('adminPassword').value;
+
+        if (!adminId || !name || !email || !password) {
+            showMessage('createAdminMessage', 'Please fill in all fields', 'error');
+            return;
+        }
+
+        const data = {
+            admin_id: adminId,
+            name: name,
+            email: email,
+            password: password,
+            can_create_admins: document.getElementById('permCreateAdmins').checked,
+            can_create_students: document.getElementById('permCreateStudents').checked,
+            can_create_faculty: document.getElementById('permCreateFaculty').checked
+        };
+
+        fetch('/api/principal/create-admin', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showMessage('createAdminMessage', 'Admin created successfully!', 'success');
+                document.getElementById('adminId').value = '';
+                document.getElementById('adminName').value = '';
+                document.getElementById('adminEmail').value = '';
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('permCreateAdmins').checked = false;
+                document.getElementById('permCreateStudents').checked = false;
+                document.getElementById('permCreateFaculty').checked = false;
+                loadAdmins();
+                loadStats();
+            } else {
+                showMessage('createAdminMessage', data.message || 'Error creating admin', 'error');
+            }
+        })
+        .catch(e => {
+            console.error('Error:', e);
+            showMessage('createAdminMessage', 'Error creating admin', 'error');
+        });
+    });
+
+    window.showAdminModal = function(adminId, name, email) {
+        selectedAdminId = adminId;
+        document.getElementById('adminModal').classList.remove('hidden');
+        document.getElementById('modalTitle').textContent = name;
+        document.getElementById('modalContent').innerHTML = `
+            <p><span class="text-gray-400">Admin ID:</span> <span class="text-white font-semibold">${adminId}</span></p>
+            <p><span class="text-gray-400">Email:</span> <span class="text-white font-semibold">${email}</span></p>
+        `;
+        document.getElementById('modalMessage').classList.add('hidden');
+    };
+
+    document.getElementById('closeModalBtn').addEventListener('click', function() {
+        document.getElementById('adminModal').classList.add('hidden');
+    });
+
+    document.getElementById('resetPasswordBtn').addEventListener('click', function() {
+        if (!selectedAdminId) return;
+        const newPass = prompt('Enter new password:');
+        if (!newPass) return;
+
+        fetch(`/api/principal/admin/${selectedAdminId}/reset-password`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({password: newPass})
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showMessage('modalMessage', 'Password reset successfully!', 'success');
+                loadAdmins();
+            } else {
+                showMessage('modalMessage', data.message || 'Error resetting password', 'error');
+            }
+        })
+        .catch(e => showMessage('modalMessage', 'Error resetting password', 'error'));
+    });
+
+    document.getElementById('deleteAdminBtn').addEventListener('click', function() {
+        if (!selectedAdminId) return;
+        if (!confirm('Are you sure you want to delete this admin?')) return;
+
+        fetch(`/api/principal/admin/${selectedAdminId}/delete`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                document.getElementById('adminModal').classList.add('hidden');
+                loadAdmins();
+                loadStats();
+            } else {
+                showMessage('modalMessage', data.message || 'Error deleting admin', 'error');
+            }
+        })
+        .catch(e => showMessage('modalMessage', 'Error deleting admin', 'error'));
+    });
+
+    function showMessage(elementId, message, type) {
+        const element = document.getElementById(elementId);
+        element.classList.remove('hidden', 'bg-green-50', 'border-green-200', 'text-green-700', 'bg-red-50', 'border-red-200', 'text-red-700');
+        element.classList.add(type === 'success' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700', 'border');
+        element.textContent = message;
+    }
+
+    // Initial load
+    loadStats();
+    loadAdmins();
+});
+</script>
+{% endblock %}

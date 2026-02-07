@@ -1,0 +1,47 @@
+{% extends "student/layout.html" %}
+
+{% block page_title %}Knowledge Base{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Knowledge Header -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-2xl font-bold text-acrm-navy mb-2">Knowledge Base</h2>
+        <p class="text-gray-600">Access your study materials, notes, and resources</p>
+    </div>
+
+    <!-- Empty State -->
+    <div class="bg-white rounded-lg shadow p-12 text-center">
+        <i class="fas fa-book text-6xl text-gray-300 mb-4"></i>
+        <h3 class="text-xl font-semibold text-gray-600 mb-2">No Resources Yet</h3>
+        <p class="text-gray-500 mb-6">Your course materials and notes will appear here when your faculty uploads them.</p>
+        <div class="inline-flex space-x-3">
+            <button class="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition font-medium">
+                <i class="fas fa-sync mr-2"></i> Refresh
+            </button>
+            <button class="px-6 py-2 bg-acrm-orange hover:bg-orange-600 text-white rounded-lg transition font-medium">
+                <i class="fas fa-bell mr-2"></i> Notify Me
+            </button>
+        </div>
+    </div>
+
+    <!-- Placeholder Sections (for when content is added) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 opacity-30 pointer-events-none">
+        <div class="bg-white rounded-lg shadow p-6">
+            <i class="fas fa-file-pdf text-red-500 text-3xl mb-3"></i>
+            <h3 class="font-semibold text-acrm-navy mb-2">Study Materials</h3>
+            <p class="text-sm text-gray-600">PDFs, notes, and presentations</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <i class="fas fa-video text-blue-500 text-3xl mb-3"></i>
+            <h3 class="font-semibold text-acrm-navy mb-2">Lecture Videos</h3>
+            <p class="text-sm text-gray-600">Recorded lectures and tutorials</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <i class="fas fa-link text-green-500 text-3xl mb-3"></i>
+            <h3 class="font-semibold text-acrm-navy mb-2">Resources</h3>
+            <p class="text-sm text-gray-600">External links and references</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

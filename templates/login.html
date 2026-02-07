@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-black via-acrm-dark-navy to-black flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-md">
+        <!-- Logo Section -->
+        <div class="text-center mb-8">
+            <img src="{{ url_for('static', filename='images/acrm-logo.svg') }}" alt="ACRM" class="h-12 mx-auto mb-4">
+            <h1 class="text-3xl font-bold text-white mb-2">Welcome Back</h1>
+            <p class="text-gray-400">Select your Institution</p>
+        </div>
+
+        <!-- Login Card -->
+        <div class="bg-white rounded-lg shadow-2xl p-8">
+            <form id="institutionForm">
+                <!-- Institution Search/Selection -->
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">Choose your Institution</label>
+                    
+                    <!-- Search Input -->
+                    <div class="relative mb-3">
+                        <svg class="absolute left-3 top-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <input 
+                            type="text" 
+                            id="institutionSearch" 
+                            placeholder="Search institution..." 
+                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-acrm-orange focus:border-transparent transition"
+                        >
+                    </div>
+
+                    <!-- Institution Dropdown -->
+                    <div class="relative">
+                        <select 
+                            id="institutionSelect" 
+                            name="institution_id" 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-acrm-orange focus:border-transparent transition appearance-none bg-white cursor-pointer"
+                            required
+                        >
+                            <option value="">-- Select Your Institution --</option>
+                            {% for institution in institutions %}
+                            <option value="{{ institution.id }}" data-name="{{ institution.name }}">
+                                {{ institution.name }} - {{ institution.city }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <!-- Dropdown Arrow -->
+                        <svg class="absolute right-4 top-3 h-5 w-5 text-gray-600 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                        </svg>
+                    </div>
+
+                    <!-- Selected Institution Info -->
+                    <div id="selectedInfo" class="mt-3 hidden p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p class="text-sm text-blue-700">
+                            Selected: <span id="selectedName" class="font-semibold"></span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Error Message -->
+                <div id="errorMessage" class="hidden mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p class="text-sm text-red-700"></p>
+                </div>
+
+                <!-- Submit Button -->
+                <button 
+                    type="submit" 
+                    class="w-full bg-acrm-orange hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center gap-2"
+                >
+                    <span>Proceed to Login</span>
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                </button>
+
+                <!-- Back Link -->
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('home.home') }}" class="text-sm text-gray-600 hover:text-acrm-orange transition">
+                        Back to Home
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Footer Info -->
+        <div class="text-center mt-8 text-gray-400 text-sm">
+            <p>Don't have an account? Contact your institution administrator</p>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const institutionSelect = document.getElementById('institutionSelect');
+    const institutionSearch = document.getElementById('institutionSearch');
+    const selectedInfo = document.getElementById('selectedInfo');
+    const selectedName = document.getElementById('selectedName');
+    const form = document.getElementById('institutionForm');
+    const errorMessage = document.getElementById('errorMessage');
+
+    // Search functionality
+    institutionSearch.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const options = institutionSelect.querySelectorAll('option:not(:first-child)');
+        let hasMatch = false;
+
+        options.forEach(option => {
+            const text = option.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+                option.style.display = 'block';
+                hasMatch = true;
+            } else {
+                option.style.display = 'none';
+            }
+        });
+
+        if (!hasMatch && searchTerm.length > 0) {
+            errorMessage.classList.remove('hidden');
+            errorMessage.querySelector('p').textContent = 'No institutions found matching your search';
+        } else {
+            errorMessage.classList.add('hidden');
+        }
+    });
+
+    // Selection change
+    institutionSelect.addEventListener('change', function() {
+        if (this.value) {
+            selectedName.textContent = this.options[this.selectedIndex].dataset.name;
+            selectedInfo.classList.remove('hidden');
+        } else {
+            selectedInfo.classList.add('hidden');
+        }
+    });
+
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const institutionId = institutionSelect.value;
+        
+        if (!institutionId) {
+            errorMessage.classList.remove('hidden');
+            errorMessage.querySelector('p').textContent = 'Please select an institution';
+            return;
+        }
+
+        // Redirect to role selection page
+        window.location.href = `/login-institution/${institutionId}`;
+    });
+});
+</script>
+{% endblock %}

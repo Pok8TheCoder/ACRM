@@ -1,0 +1,167 @@
+{% extends "faculty/layout.html" %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Welcome Section -->
+    <div class="bg-white rounded-lg shadow p-6 flex items-center space-x-6">
+        <div class="w-16 h-16 bg-gradient-to-br from-acrm-orange to-orange-600 rounded-full flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-chalkboard-user text-white text-2xl"></i>
+        </div>
+        <div>
+            <h1 class="text-3xl font-bold text-acrm-navy">Welcome, Dr. {{ session.get('user_name', 'Faculty') }}</h1>
+            <p class="text-gray-600">Here is your teaching overview.</p>
+        </div>
+    </div>
+
+    <!-- Next Class Card -->
+    <div class="bg-gradient-to-br from-acrm-orange to-orange-600 rounded-lg shadow-lg p-8 text-white">
+        <div class="flex items-start justify-between">
+            <div>
+                <p class="text-orange-100 text-sm font-semibold mb-2">NEXT CLASS</p>
+                <h2 class="text-3xl font-bold mb-4">Mathematics - Calculus</h2>
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-clock w-5"></i>
+                        <span>10:00 AM - 11:00 AM</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-map-marker-alt w-5"></i>
+                        <span>Room 305 - Building A</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-users w-5"></i>
+                        <span>35 Students Enrolled</span>
+                    </div>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-orange-100 text-sm mb-2">Starting in</p>
+                <p class="text-4xl font-bold">2h 15m</p>
+                <button class="mt-4 px-6 py-2 bg-white text-acrm-orange font-semibold rounded-lg hover:bg-gray-100 transition">
+                    <i class="fas fa-arrow-right mr-2"></i> Go to Classroom
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teaching Statistics -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Classes Today -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <p class="text-gray-600 text-sm">Classes Today</p>
+                    <p class="text-4xl font-bold text-acrm-navy">3</p>
+                </div>
+                <i class="fas fa-calendar-alt text-acrm-orange text-3xl opacity-70"></i>
+            </div>
+            <p class="text-xs text-gray-500">Next: 10:00 AM</p>
+        </div>
+
+        <!-- Students Taught -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <p class="text-gray-600 text-sm">Students Taught</p>
+                    <p class="text-4xl font-bold text-acrm-navy">125</p>
+                </div>
+                <i class="fas fa-graduation-cap text-green-500 text-3xl opacity-70"></i>
+            </div>
+            <p class="text-xs text-gray-500">across all sections</p>
+        </div>
+
+        <!-- Pending Submissions -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <p class="text-gray-600 text-sm">Pending Submissions</p>
+                    <p class="text-4xl font-bold text-acrm-navy">18</p>
+                </div>
+                <i class="fas fa-inbox text-blue-500 text-3xl opacity-70"></i>
+            </div>
+            <p class="text-xs text-gray-500">to review and verify</p>
+        </div>
+    </div>
+
+    <!-- Your Classes -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-bold text-acrm-navy mb-6">Your Classes</h3>
+        <div class="space-y-4">
+            <!-- Class 1 -->
+            <div class="border-l-4 border-acrm-orange p-4 bg-gray-50 rounded-lg hover:shadow-md transition cursor-pointer">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h4 class="font-bold text-acrm-navy text-lg">Calculus 1</h4>
+                        <p class="text-sm text-gray-600 mt-1">Grade 10 - Section A</p>
+                        <p class="text-xs text-gray-500 mt-2">10:00 AM - 11:00 AM</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold text-acrm-orange">35 Students</p>
+                        <p class="text-xs text-gray-600">Room 305</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Class 2 -->
+            <div class="border-l-4 border-acrm-light-navy p-4 bg-gray-50 rounded-lg hover:shadow-md transition cursor-pointer">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h4 class="font-bold text-acrm-navy text-lg">Algebra 2</h4>
+                        <p class="text-sm text-gray-600 mt-1">Grade 9 - Section B</p>
+                        <p class="text-xs text-gray-500 mt-2">12:15 PM - 1:15 PM</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold text-acrm-light-navy">30 Students</p>
+                        <p class="text-xs text-gray-600">Room 215</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Class 3 -->
+            <div class="border-l-4 border-blue-500 p-4 bg-gray-50 rounded-lg hover:shadow-md transition cursor-pointer">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h4 class="font-bold text-acrm-navy text-lg">Advanced Statistics</h4>
+                        <p class="text-sm text-gray-600 mt-1">Grade 12 - Advanced</p>
+                        <p class="text-xs text-gray-500 mt-2">3:15 PM - 4:15 PM</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold text-blue-500">22 Students</p>
+                        <p class="text-xs text-gray-600">Lab 101</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-bold text-acrm-navy mb-4">Recent Activity</h3>
+        <div class="space-y-3">
+            <div class="flex items-center justify-between py-3 border-b border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <div class="w-2 h-2 bg-acrm-orange rounded-full"></div>
+                    <span class="text-gray-700">12 students submitted assignments in Calculus</span>
+                </div>
+                <span class="text-sm text-gray-500">2 hours ago</span>
+            </div>
+            <div class="flex items-center justify-between py-3 border-b border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span class="text-gray-700">Statistics quiz graded - 15 responses</span>
+                </div>
+                <span class="text-sm text-gray-500">5 hours ago</span>
+            </div>
+            <div class="flex items-center justify-between py-3">
+                <div class="flex items-center space-x-3">
+                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span class="text-gray-700">New note uploaded to Algebra 2</span>
+                </div>
+                <span class="text-sm text-gray-500">1 day ago</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
