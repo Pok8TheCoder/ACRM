@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <style>
+      .book-base { fill: #001F3F; }
+      .book-lines { stroke: #FF6B35; stroke-width: 8; fill: none; }
+      .pillar { fill: #001F3F; }
+      .cap { fill: #001F3F; }
+      .tassel { fill: #FF6B35; }
+      .globe-circle { stroke: #001F3F; stroke-width: 3; fill: none; }
+      .globe-fill { fill: #FF6B35; opacity: 0.3; }
+      .arrow { stroke: #FF6B35; stroke-width: 12; fill: none; stroke-linecap: round; }
+      .arrow-head { fill: #FF6B35; }
+      .text { font-size: 85px; font-weight: 900; fill: #001F3F; letter-spacing: 3px; }
+    </style>
+  </defs>
+  
+  <!-- Book Base -->
+  <path class="book-base" d="M 60 340 L 440 340 L 460 420 L 40 420 Z"/>
+  <path class="book-base" d="M 100 280 L 400 280 Q 420 280 430 300 L 460 420 L 40 420 L 70 300 Q 80 280 100 280 Z"/>
+  
+  <!-- Book Pages/Lines -->
+  <path class="book-lines" d="M 150 320 Q 250 330 350 320"/>
+  <path class="book-lines" d="M 140 345 Q 250 355 360 345"/>
+  <path class="book-lines" d="M 130 370 Q 250 380 370 370"/>
+  
+  <!-- Left Pillar -->
+  <g>
+    <rect class="pillar" x="160" y="100" width="35" height="180" rx="4"/>
+    <path class="pillar" d="M 155 95 L 210 95 L 205 85 L 160 85 Z"/>
+    <line x="167" y="140" x2="188" y2="140" stroke="#001F3F" stroke-width="3"/>
+    <line x="167" y="160" x2="188" y2="160" stroke="#001F3F" stroke-width="3"/>
+  </g>
+  
+  <!-- Graduation Cap -->
+  <g>
+    <!-- Cap top -->
+    <ellipse class="cap" cx="250" cy="85" rx="60" ry="15"/>
+    <path class="cap" d="M 190 85 L 310 85 L 320 60 L 180 60 Z"/>
+    <!-- Tassel -->
+    <circle class="tassel" cx="250" cy="85" r="8"/>
+    <line x1="250" y1="93" x2="250" y2="140" stroke="#FF6B35" stroke-width="4"/>
+  </g>
+  
+  <!-- Globe -->
+  <g>
+    <circle class="globe-circle" cx="360" cy="100" r="45"/>
+    <circle class="globe-fill" cx="360" cy="100" r="40"/>
+    <!-- Continents -->
+    <path class="globe-circle" d="M 325 100 Q 360 80 395 100"/>
+    <path class="globe-circle" d="M 330 110 Q 360 125 390 110"/>
+    <circle class="tassel" cx="375" cy="80" r="5"/>
+    <circle class="tassel" cx="340" cy="130" r="4" opacity="0.7"/>
+  </g>
+  
+  <!-- Growth Arrow -->
+  <g>
+    <path class="arrow" d="M 340 160 L 460 40"/>
+    <!-- Arrow head -->
+    <polygon class="arrow-head" points="460,40 495,10 455,95"/>
+  </g>
+  
+  <!-- ACRM Text -->
+  <text x="250" y="475" text-anchor="middle" class="text">ACRM</text>
+</svg>

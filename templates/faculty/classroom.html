@@ -1,0 +1,968 @@
+{% extends "faculty/layout.html" %}
+
+{% block page_title %}Classroom Management{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-2xl font-bold text-acrm-navy mb-2">Classroom Management</h2>
+        <p class="text-gray-600">Select a class to manage assignments and resources</p>
+    </div>
+
+    <!-- Classes Grid View (Initial) -->
+    <div id="classesGridView" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Classes will be loaded here via JavaScript -->
+    </div>
+
+    <!-- Class Management View (Hidden by default) -->
+    <div id="classManagementView" class="hidden space-y-6">
+        <!-- Back Button -->
+        <button id="backToClasses" class="flex items-center space-x-2 text-acrm-orange hover:text-orange-600 transition font-medium mb-4">
+            <i class="fas fa-arrow-left"></i>
+            <span>Back to Classes</span>
+        </button>
+
+        <!-- Class Info Header -->
+        <div id="classInfoHeader" class="bg-white rounded-lg shadow p-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p class="text-blue-600 text-sm font-semibold">Program</p>
+                    <p id="headerProgram" class="text-2xl font-bold text-blue-700"></p>
+                </div>
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <p class="text-green-600 text-sm font-semibold">Students</p>
+                    <p id="headerStudents" class="text-2xl font-bold text-green-700"></p>
+                </div>
+                <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                    <p class="text-purple-600 text-sm font-semibold">Subject</p>
+                    <p id="headerSubject" class="text-2xl font-bold text-purple-700"></p>
+                </div>
+                <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                    <p class="text-orange-600 text-sm font-semibold">Room</p>
+                    <p id="headerRoom" class="text-2xl font-bold text-orange-700"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="border-b border-gray-200 px-6">
+                <div class="flex space-x-6">
+                    <button class="section-tab px-4 py-3 font-semibold text-acrm-navy border-b-2 border-acrm-orange whitespace-nowrap" data-section="assignments">
+                        Assignments
+                    </button>
+                    <button class="section-tab px-4 py-3 font-semibold text-gray-600 border-b-2 border-transparent hover:text-acrm-navy whitespace-nowrap" data-section="resources">
+                        Resources & Notes
+                    </button>
+                </div>
+            </div>
+
+            <!-- Assignments Section -->
+            <div id="assignments-section" class="section-content p-6 space-y-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-acrm-navy">Manage Assignments</h3>
+                    <button id="addAssignmentBtn" class="px-4 py-2 bg-acrm-orange text-white rounded-lg hover:bg-orange-600 transition font-medium">
+                        <i class="fas fa-plus mr-2"></i> Add Assignment
+                    </button>
+                </div>
+
+                <!-- Assignments List -->
+                <div id="assignmentsList" class="space-y-3">
+                    <!-- Assignments will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Resources Section -->
+            <div id="resources-section" class="section-content hidden p-6 space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-acrm-navy">Resources & Notes</h3>
+                        <p class="text-sm text-gray-500">Organize materials chapter-wise for your class</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button id="backToChaptersBtn" class="hidden px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition font-medium">
+                            <i class="fas fa-arrow-left mr-2"></i> Back to Chapters
+                        </button>
+                        <button id="uploadChapterResourceBtn" class="hidden px-4 py-2 bg-acrm-navy text-white rounded-lg hover:bg-blue-900 transition font-medium">
+                            <i class="fas fa-upload mr-2"></i> Upload Resource
+                        </button>
+                        <button id="addChapterBtn" class="px-4 py-2 bg-acrm-orange text-white rounded-lg hover:bg-orange-600 transition font-medium">
+                            <i class="fas fa-plus mr-2"></i> Add Chapter
+                        </button>
+                    </div>
+                </div>
+
+                <div id="chapterGlobalMessage" class="hidden text-sm rounded-lg px-3 py-2"></div>
+
+                <div id="addChapterFormWrapper" class="hidden bg-orange-50 border border-orange-200 rounded-lg p-4">
+                    <form id="addChapterForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Chapter Name</label>
+                            <input id="chapterNameInput" type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-acrm-orange" placeholder="e.g., Introduction to Graphs" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Chapter Number (optional)</label>
+                            <input id="chapterNumberInput" type="number" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-acrm-orange" placeholder="1">
+                        </div>
+                        <div class="md:col-span-3 flex justify-end gap-3">
+                            <button type="button" id="cancelChapterFormBtn" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100">Cancel</button>
+                            <button type="submit" class="px-4 py-2 bg-acrm-orange text-white rounded-lg hover:bg-orange-600 font-semibold">Save Chapter</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="chaptersList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="col-span-full bg-blue-50 border border-blue-200 rounded-lg p-6 text-center text-blue-700">
+                        <p class="font-medium">Select a class to load chapters.</p>
+                    </div>
+                </div>
+
+                <div id="chapterDetailPanel" class="hidden space-y-4">
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <p class="text-xs uppercase tracking-wide text-gray-500">Active Chapter</p>
+                        <h4 id="activeChapterTitle" class="text-2xl font-bold text-acrm-navy">Chapter Name</h4>
+                        <p id="activeChapterMeta" class="text-sm text-gray-600"></p>
+                    </div>
+
+                    <div id="chapterResourceList" class="space-y-3 bg-white border border-gray-200 rounded-lg p-4 min-h-[150px]">
+                        <p class="text-gray-500">No chapter selected yet.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chapter Upload Overlay -->
+    <div id="chapterUploadOverlay" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 space-y-4 relative">
+            <button id="closeChapterUploadBtn" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600" aria-label="Close upload form">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <div>
+                <p class="text-xs uppercase tracking-wide text-gray-500">Upload Resource</p>
+                <h4 id="chapterUploadTitle" class="text-2xl font-bold text-acrm-navy">Selected Chapter</h4>
+            </div>
+            <form id="chapterUploadForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Title (optional)</label>
+                    <input id="chapterResourceTitle" type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-acrm-orange" placeholder="Resource title">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Description (optional)</label>
+                    <textarea id="chapterResourceDescription" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-acrm-orange" placeholder="Notes visible to students"></textarea>
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-gray-700">Files</label>
+                    <div id="chapterDropzone" class="border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 hover:bg-gray-100 transition px-4 py-8 text-center cursor-pointer">
+                        <i class="fas fa-cloud-upload-alt text-3xl text-acrm-orange mb-2"></i>
+                        <p class="font-semibold text-acrm-navy">Drag & drop files here</p>
+                        <p class="text-xs text-gray-500">or click to browse from your computer</p>
+                    </div>
+                    <input id="chapterResourceFiles" type="file" class="hidden" multiple>
+                    <div id="chapterUploadFileList" class="text-sm text-gray-600 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+                        No files selected yet.
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" id="cancelChapterUploadBtn" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-acrm-navy text-white rounded-lg hover:bg-blue-900 font-semibold">Upload</button>
+                </div>
+                <p class="text-xs text-gray-400 text-right">Multiple files will be uploaded together.</p>
+            </form>
+            <div id="chapterResourceMessage" class="hidden text-sm rounded-lg px-3 py-2"></div>
+        </div>
+    </div>
+
+    <!-- Add Assignment Modal -->
+    <div id="assignmentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 p-8">
+            <h2 class="text-2xl font-bold text-acrm-navy mb-6">Add New Assignment</h2>
+            
+            <form id="assignmentForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Assignment Title</label>
+                    <input type="text" id="assignmentTitle" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-acrm-orange" placeholder="e.g., Data Structures Problem Set 5" required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+                    <textarea id="assignmentDescription" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-acrm-orange" rows="4" placeholder="Assignment details and instructions" required></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Due Date & Time</label>
+                    <input type="datetime-local" id="assignmentDueDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-acrm-orange" required>
+                </div>
+
+                <div class="flex space-x-3 pt-4">
+                    <button type="submit" class="flex-1 px-4 py-2 bg-acrm-orange text-white rounded-lg hover:bg-orange-600 transition font-medium">
+                        Create Assignment
+                    </button>
+                    <button type="button" id="closeAssignmentModal" class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition font-medium">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentClassFacultyId = null;
+let currentClassName = null;
+let currentSubjectId = null;
+let chapterCatalog = [];
+let currentChapterId = null;
+let chapterUploadFiles = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadClasses();
+    setupEventListeners();
+    initChapterUploadUI();
+});
+
+function loadClasses() {
+    // Fetch classes from server
+    fetch('/faculty/api/classes')
+        .then(res => res.json())
+        .then(data => {
+            const grid = document.getElementById('classesGridView');
+            grid.innerHTML = '';
+            
+            if (data.classes.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-gray-600">No classes assigned</p></div>';
+                return;
+            }
+            
+            data.classes.forEach(cls => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-lg shadow hover:shadow-lg transition cursor-pointer p-6';
+                card.onclick = () => openClassManagement(cls);
+                
+                card.innerHTML = `
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-acrm-navy">${cls.class_name}</h3>
+                            <p class="text-sm text-gray-600 mt-1">${cls.program_name}</p>
+                        </div>
+                        <span class="px-3 py-1 bg-acrm-orange bg-opacity-10 text-acrm-orange rounded-full text-sm font-medium">${cls.subject}</span>
+                    </div>
+                    
+                    <div class="space-y-2 mb-4 border-t border-gray-200 pt-4">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Students:</span>
+                            <span class="font-semibold text-acrm-navy">${cls.student_count ?? cls.total_students ?? 0}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Room:</span>
+                            <span class="font-semibold text-acrm-navy">${cls.room_number || 'TBA'}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Semester:</span>
+                            <span class="font-semibold text-acrm-navy">${cls.semester}</span>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full px-4 py-2 bg-acrm-orange text-white rounded-lg hover:bg-orange-600 transition font-medium">
+                        <i class="fas fa-arrow-right mr-2"></i> Manage
+                    </button>
+                `;
+                
+                grid.appendChild(card);
+            });
+        });
+}
+
+function openClassManagement(cls) {
+    currentClassFacultyId = cls.class_faculty_id;
+    currentClassName = cls.class_name;
+    currentSubjectId = cls.subject_ref_id || null;
+    currentChapterId = null;
+    chapterCatalog = [];
+    chapterUploadFiles = [];
+    closeChapterUploadOverlay(true);
+    
+    // Update header
+    document.getElementById('headerProgram').textContent = cls.program_name;
+    const studentCount = (cls.student_count !== undefined && cls.student_count !== null)
+        ? cls.student_count
+        : (cls.total_students || 0);
+    document.getElementById('headerStudents').textContent = studentCount;
+    document.getElementById('headerSubject').textContent = cls.subject;
+    document.getElementById('headerRoom').textContent = cls.room_number || 'TBA';
+    
+    // Load assignments
+    loadAssignments(cls.class_faculty_id);
+    initializeChapterSection();
+    loadSubjectChapters();
+    
+    // Show management view
+    document.getElementById('classesGridView').classList.add('hidden');
+    document.getElementById('classManagementView').classList.remove('hidden');
+}
+
+function loadAssignments(classFacultyId) {
+    fetch(`/faculty/api/assignments/${classFacultyId}`)
+        .then(res => res.json())
+        .then(data => {
+            const list = document.getElementById('assignmentsList');
+            list.innerHTML = '';
+            
+            if (data.assignments.length === 0) {
+                list.innerHTML = '<div class="text-center py-8 text-gray-600">No assignments created yet</div>';
+                return;
+            }
+            
+            data.assignments.forEach(assignment => {
+                const card = document.createElement('div');
+                card.className = 'border border-gray-200 rounded-lg p-4 hover:shadow-md transition cursor-pointer';
+                card.onclick = () => viewAssignmentDetails(assignment.id);
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h4 class="font-bold text-acrm-navy">${assignment.title}</h4>
+                            <p class="text-sm text-gray-600 mt-1">Due: ${new Date(assignment.due_date).toLocaleString()}</p>
+                        </div>
+                        <span class="px-3 py-1 ${assignment.status === 'active' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'} rounded-full text-sm font-medium">${assignment.status}</span>
+                    </div>
+                    <p class="text-gray-700 mb-3">${assignment.description}</p>
+                    <div class="flex items-center space-x-6 text-sm pt-3 border-t border-gray-100">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span>${assignment.submitted_count} Submitted</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-clock text-orange-500"></i>
+                            <span>${assignment.not_submitted_count} Pending</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-stamp text-purple-500"></i>
+                            <span>${assignment.verified_count} Verified</span>
+                        </div>
+                    </div>
+                `;
+                
+                list.appendChild(card);
+            });
+        });
+}
+
+function initializeChapterSection() {
+    const chaptersList = document.getElementById('chaptersList');
+    const detailPanel = document.getElementById('chapterDetailPanel');
+    const addChapterBtn = document.getElementById('addChapterBtn');
+    const backBtn = document.getElementById('backToChaptersBtn');
+    const uploadBtn = document.getElementById('uploadChapterResourceBtn');
+    const addChapterFormWrapper = document.getElementById('addChapterFormWrapper');
+    const addChapterForm = document.getElementById('addChapterForm');
+    const overlay = document.getElementById('chapterUploadOverlay');
+    showChapterGlobalMessage('', 'info');
+
+    chapterCatalog = [];
+    currentChapterId = null;
+    detailPanel.classList.add('hidden');
+    backBtn.classList.add('hidden');
+    uploadBtn.classList.add('hidden');
+    chaptersList.classList.remove('hidden');
+    if (addChapterFormWrapper) {
+        addChapterFormWrapper.classList.add('hidden');
+    }
+    if (addChapterForm) {
+        addChapterForm.reset();
+    }
+    if (overlay) {
+        overlay.classList.add('hidden');
+    }
+    chapterUploadFiles = [];
+    renderChapterUploadFiles();
+
+    if (!currentSubjectId) {
+        addChapterBtn.disabled = true;
+        addChapterBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        chaptersList.innerHTML = `
+            <div class="col-span-full bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-yellow-800">
+                <p class="font-semibold">Link this class to a subject to maintain resources.</p>
+                <p class="text-sm mt-1">Assign a subject reference for ${currentClassName || 'this class'} inside academic setup.</p>
+            </div>
+        `;
+        return;
+    }
+
+    addChapterBtn.disabled = false;
+    addChapterBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    chaptersList.innerHTML = `
+        <div class="col-span-full bg-blue-50 border border-blue-200 rounded-lg p-6 text-center text-blue-700">
+            <p class="font-medium">Loading chapters...</p>
+        </div>
+    `;
+}
+
+function loadSubjectChapters() {
+    if (!currentSubjectId) {
+        return;
+    }
+    fetch(`/faculty/api/subjects/${currentSubjectId}/chapters`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            chapterCatalog = data.chapters || [];
+            renderChapters();
+        })
+        .catch(() => {
+            const chaptersList = document.getElementById('chaptersList');
+            chaptersList.innerHTML = `
+                <div class="col-span-full bg-red-50 border border-red-200 rounded-lg p-6 text-red-700">
+                    <p class="font-semibold">Unable to load chapters right now.</p>
+                    <p class="text-sm mt-1">Please refresh the page.</p>
+                </div>
+            `;
+        });
+}
+
+function renderChapters() {
+    const container = document.getElementById('chaptersList');
+    container.innerHTML = '';
+    if (!chapterCatalog.length) {
+        container.innerHTML = `
+            <div class="col-span-full bg-white border border-dashed border-gray-300 rounded-lg p-8 text-center text-gray-500">
+                <p class="font-semibold text-acrm-navy mb-1">No chapters yet</p>
+                <p class="text-sm">Click <span class="text-acrm-orange font-semibold">Add Chapter</span> to create your first section.</p>
+            </div>
+        `;
+        return;
+    }
+
+    chapterCatalog.forEach(chapter => {
+        const card = document.createElement('div');
+        card.className = 'bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition cursor-pointer select-none';
+        card.innerHTML = `
+            <div class="flex items-center justify-between text-sm text-gray-500 mb-2">
+                <span class="font-semibold text-acrm-orange">${chapter.chapter_number ? `Chapter ${chapter.chapter_number}` : 'Unnumbered'}</span>
+                <span>${chapter.resource_count || 0} resource${chapter.resource_count === 1 ? '' : 's'}</span>
+            </div>
+            <h4 class="text-xl font-bold text-acrm-navy mb-1">${chapter.chapter_name}</h4>
+            <p class="text-sm text-gray-600">${chapter.description || 'No chapter notes added yet.'}</p>
+            <div class="flex items-center justify-between text-xs text-gray-400 mt-3">
+                <p class="flex items-center gap-1"><i class="fas fa-mouse-pointer"></i>Double-click to open</p>
+                <button type="button" class="text-red-500 hover:text-red-600 font-semibold flex items-center gap-1 delete-chapter-btn" data-chapter-delete="${chapter.id}">
+                    <i class="fas fa-trash"></i>Delete
+                </button>
+            </div>
+        `;
+        card.addEventListener('dblclick', () => openChapterDetail(chapter.id));
+        const deleteBtn = card.querySelector('.delete-chapter-btn');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', (event) => {
+                event.stopPropagation();
+                deleteChapter(chapter.id);
+            });
+        }
+        container.appendChild(card);
+    });
+}
+
+function openChapterDetail(chapterId) {
+    if (!currentSubjectId) {
+        return;
+    }
+    fetch(`/faculty/api/chapters/${chapterId}/resources`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            currentChapterId = chapterId;
+            const chapter = chapterCatalog.find(ch => ch.id === chapterId) || data.chapter;
+            if (chapter) {
+                document.getElementById('activeChapterTitle').textContent = chapter.chapter_name;
+                const numberLabel = chapter.chapter_number ? `Chapter ${chapter.chapter_number}` : 'Custom section';
+                const resourceLabel = `${(data.resources || []).length} resource${(data.resources || []).length === 1 ? '' : 's'}`;
+                document.getElementById('activeChapterMeta').textContent = `${numberLabel} • ${resourceLabel}`;
+                chapter.resource_count = (data.resources || []).length;
+            }
+            document.getElementById('chaptersList').classList.add('hidden');
+            document.getElementById('chapterDetailPanel').classList.remove('hidden');
+            document.getElementById('backToChaptersBtn').classList.remove('hidden');
+            document.getElementById('uploadChapterResourceBtn').classList.remove('hidden');
+            closeChapterUploadOverlay(true);
+            renderChapterResources(data.resources || []);
+            renderChapters();
+        })
+        .catch(() => {
+            showChapterGlobalMessage('Unable to open chapter right now.', 'error');
+        });
+}
+
+function renderChapterResources(resources) {
+    const container = document.getElementById('chapterResourceList');
+    if (!resources.length) {
+        container.innerHTML = `
+            <div class="text-center text-gray-500 py-6">
+                <i class="fas fa-folder-open text-3xl mb-2"></i>
+                <p>No resources uploaded for this chapter yet.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = resources.map(resource => `
+        <div class="border border-gray-200 rounded-lg p-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+                <p class="font-semibold text-acrm-navy">${resource.title}</p>
+                <p class="text-sm text-gray-600">${resource.description || 'No description provided'}</p>
+                <p class="text-xs text-gray-400 mt-1">Uploaded ${new Date(resource.uploaded_at).toLocaleString()}</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <a class="px-3 py-2 text-sm bg-acrm-orange text-white rounded-lg hover:bg-orange-600 inline-flex items-center" href="/faculty/api/resources/${resource.id}/download">
+                    <i class="fas fa-download mr-2"></i>Download
+                </a>
+                <button type="button" class="px-3 py-2 text-sm border border-red-200 text-red-600 rounded-lg hover:bg-red-50 flex items-center gap-2" data-resource-delete="${resource.id}">
+                    <i class="fas fa-trash"></i>Delete
+                </button>
+            </div>
+        </div>
+    `).join('');
+
+    container.querySelectorAll('[data-resource-delete]').forEach(button => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const resourceId = Number(button.dataset.resourceDelete);
+            deleteChapterResource(resourceId);
+        });
+    });
+}
+
+function deleteChapter(chapterId) {
+    if (!currentSubjectId || !chapterId) {
+        return;
+    }
+    const confirmed = window.confirm('Delete this chapter? Resources will be unassigned.');
+    if (!confirmed) {
+        return;
+    }
+    fetch(`/faculty/api/chapters/${chapterId}`, {
+        method: 'DELETE'
+    })
+        .then(async (res) => {
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || data.status !== 'success') {
+                throw new Error(data.message || 'Unable to delete chapter');
+            }
+            return data;
+        })
+        .then(() => {
+            showChapterGlobalMessage('Chapter deleted.', 'success');
+            if (currentChapterId === chapterId) {
+                currentChapterId = null;
+                document.getElementById('chapterDetailPanel').classList.add('hidden');
+                document.getElementById('chaptersList').classList.remove('hidden');
+                document.getElementById('backToChaptersBtn').classList.add('hidden');
+                document.getElementById('uploadChapterResourceBtn').classList.add('hidden');
+                const list = document.getElementById('chapterResourceList');
+                if (list) {
+                    list.innerHTML = '<p class="text-gray-500">No chapter selected yet.</p>';
+                }
+                closeChapterUploadOverlay(true);
+            }
+            loadSubjectChapters();
+        })
+        .catch(err => {
+            showChapterGlobalMessage(err.message || 'Unable to delete chapter', 'error');
+        });
+}
+
+function deleteChapterResource(resourceId) {
+    if (!resourceId || !currentChapterId) {
+        return;
+    }
+    const confirmed = window.confirm('Delete this resource file permanently?');
+    if (!confirmed) {
+        return;
+    }
+    fetch(`/faculty/api/resources/${resourceId}`, {
+        method: 'DELETE'
+    })
+        .then(async (res) => {
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || data.status !== 'success') {
+                throw new Error(data.message || 'Unable to delete resource');
+            }
+            return data;
+        })
+        .then(() => {
+            showChapterResourceMessage('Resource deleted.', 'success');
+            openChapterDetail(currentChapterId);
+        })
+        .catch(err => {
+            showChapterResourceMessage(err.message || 'Unable to delete resource', 'error');
+        });
+}
+
+function toggleAddChapterForm(forceState) {
+    const wrapper = document.getElementById('addChapterFormWrapper');
+    if (!wrapper) {
+        return;
+    }
+    const shouldShow = typeof forceState === 'boolean' ? forceState : wrapper.classList.contains('hidden');
+    wrapper.classList.toggle('hidden', !shouldShow);
+}
+
+function handleAddChapterSubmit(event) {
+    event.preventDefault();
+    if (!currentSubjectId) {
+        return;
+    }
+    const nameInput = document.getElementById('chapterNameInput');
+    const numberInput = document.getElementById('chapterNumberInput');
+    const payload = {
+        name: nameInput.value || '',
+        number: numberInput.value ? Number(numberInput.value) : null
+    };
+    fetch(`/faculty/api/subjects/${currentSubjectId}/chapters`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status !== 'success') {
+                throw new Error(data.message || 'Unable to create chapter');
+            }
+            nameInput.value = '';
+            numberInput.value = '';
+            toggleAddChapterForm(false);
+            showChapterGlobalMessage('Chapter added successfully.', 'success');
+            loadSubjectChapters();
+        })
+        .catch(err => {
+            showChapterGlobalMessage(err.message || 'Unable to add chapter', 'error');
+        });
+}
+
+function handleChapterResourceSubmit(event) {
+    event.preventDefault();
+    if (!currentSubjectId || !currentChapterId) {
+        showChapterResourceMessage('Open a chapter before uploading.', 'error');
+        return;
+    }
+    const fileInput = document.getElementById('chapterResourceFiles');
+    const fallbackFiles = Array.from(fileInput?.files || []);
+    const files = chapterUploadFiles.length ? chapterUploadFiles : fallbackFiles;
+    if (!files.length) {
+        showChapterResourceMessage('Add at least one file.', 'error');
+        return;
+    }
+    const formData = new FormData();
+    formData.append('title', document.getElementById('chapterResourceTitle').value);
+    formData.append('description', document.getElementById('chapterResourceDescription').value);
+    formData.append('chapter_id', currentChapterId);
+    files.forEach(file => {
+        formData.append('files', file, file.name);
+        formData.append('relative_paths', file.name);
+    });
+
+    fetch(`/faculty/api/subjects/${currentSubjectId}/upload-resource`, {
+        method: 'POST',
+        body: formData
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status !== 'success') {
+                throw new Error(data.message || 'Upload failed');
+            }
+            showChapterResourceMessage(data.message || 'Resource uploaded.', 'success');
+            closeChapterUploadOverlay(true);
+            openChapterDetail(currentChapterId);
+        })
+        .catch(err => {
+            showChapterResourceMessage(err.message || 'Upload failed', 'error');
+        });
+}
+
+function openChapterUploadOverlay() {
+    if (!currentChapterId) {
+        showChapterResourceMessage('Open a chapter first.', 'error');
+        return;
+    }
+    const overlay = document.getElementById('chapterUploadOverlay');
+    if (!overlay) {
+        return;
+    }
+    const chapter = chapterCatalog.find(ch => ch.id === currentChapterId);
+    const titleTarget = document.getElementById('chapterUploadTitle');
+    if (titleTarget) {
+        titleTarget.textContent = chapter ? chapter.chapter_name : 'Selected Chapter';
+    }
+    const form = document.getElementById('chapterUploadForm');
+    if (form) {
+        form.reset();
+    }
+    const fileInput = document.getElementById('chapterResourceFiles');
+    if (fileInput) {
+        fileInput.value = '';
+    }
+    chapterUploadFiles = [];
+    renderChapterUploadFiles();
+    showChapterResourceMessage('', 'info');
+    overlay.classList.remove('hidden');
+}
+
+function closeChapterUploadOverlay(resetFiles = false) {
+    const overlay = document.getElementById('chapterUploadOverlay');
+    if (!overlay) {
+        return;
+    }
+    overlay.classList.add('hidden');
+    if (resetFiles) {
+        chapterUploadFiles = [];
+        const fileInput = document.getElementById('chapterResourceFiles');
+        if (fileInput) {
+            fileInput.value = '';
+        }
+        renderChapterUploadFiles();
+    }
+    showChapterResourceMessage('', 'info');
+}
+
+function initChapterUploadUI() {
+    const overlay = document.getElementById('chapterUploadOverlay');
+    const dropzone = document.getElementById('chapterDropzone');
+    const fileInput = document.getElementById('chapterResourceFiles');
+    const closeBtn = document.getElementById('closeChapterUploadBtn');
+    const cancelBtn = document.getElementById('cancelChapterUploadBtn');
+    const form = document.getElementById('chapterUploadForm');
+    if (!overlay || !dropzone || !fileInput || !closeBtn || !cancelBtn || !form) {
+        return;
+    }
+
+    overlay.addEventListener('click', (event) => {
+        if (event.target.id === 'chapterUploadOverlay') {
+            closeChapterUploadOverlay();
+        }
+    });
+    closeBtn.addEventListener('click', () => closeChapterUploadOverlay(true));
+    cancelBtn.addEventListener('click', () => closeChapterUploadOverlay(true));
+
+    const setActive = (active) => {
+        dropzone.classList.toggle('border-acrm-orange', active);
+        dropzone.classList.toggle('bg-orange-50', active);
+    };
+
+    dropzone.addEventListener('click', () => fileInput.click());
+    dropzone.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        setActive(true);
+    });
+    dropzone.addEventListener('dragleave', (event) => {
+        const nextTarget = event.relatedTarget;
+        if (!nextTarget || !dropzone.contains(nextTarget)) {
+            setActive(false);
+        }
+    });
+    dropzone.addEventListener('drop', (event) => {
+        event.preventDefault();
+        setActive(false);
+        if (event.dataTransfer?.files?.length) {
+            chapterUploadFiles = Array.from(event.dataTransfer.files);
+            renderChapterUploadFiles();
+        }
+    });
+
+    fileInput.addEventListener('change', () => {
+        chapterUploadFiles = Array.from(fileInput.files || []);
+        renderChapterUploadFiles();
+    });
+
+    form.addEventListener('submit', handleChapterResourceSubmit);
+    renderChapterUploadFiles();
+}
+
+function renderChapterUploadFiles() {
+    const list = document.getElementById('chapterUploadFileList');
+    if (!list) {
+        return;
+    }
+    if (!chapterUploadFiles.length) {
+        list.innerHTML = 'No files selected yet.';
+        return;
+    }
+    const previewItems = chapterUploadFiles.slice(0, 5).map(file => `<li class="truncate">${file.name}</li>`).join('');
+    const extra = chapterUploadFiles.length > 5 ? `<li class="text-gray-400">+${chapterUploadFiles.length - 5} more</li>` : '';
+    list.innerHTML = `
+        <div class="flex items-center justify-between">
+            <p class="font-semibold text-acrm-navy">${chapterUploadFiles.length} file${chapterUploadFiles.length === 1 ? '' : 's'} ready</p>
+            <button type="button" class="text-xs text-red-500 hover:text-red-600" onclick="clearChapterUploadFiles()">Clear</button>
+        </div>
+        <ul class="mt-2 text-xs text-gray-600 space-y-1 max-h-32 overflow-y-auto">${previewItems}${extra}</ul>
+    `;
+}
+
+function clearChapterUploadFiles() {
+    chapterUploadFiles = [];
+    const fileInput = document.getElementById('chapterResourceFiles');
+    if (fileInput) {
+        fileInput.value = '';
+    }
+    renderChapterUploadFiles();
+}
+
+function showChapterGlobalMessage(message, type = 'info') {
+    const box = document.getElementById('chapterGlobalMessage');
+    if (!box) return;
+    if (!message) {
+        box.classList.add('hidden');
+        return;
+    }
+    const palette = type === 'error'
+        ? 'bg-red-100 border border-red-200 text-red-800'
+        : type === 'success'
+            ? 'bg-green-100 border border-green-200 text-green-800'
+            : 'bg-blue-100 border border-blue-200 text-blue-800';
+    box.className = `${palette} text-sm rounded-lg px-3 py-2`;
+    box.textContent = message;
+    box.classList.remove('hidden');
+    setTimeout(() => box.classList.add('hidden'), 3500);
+}
+
+function showChapterResourceMessage(message, type = 'info') {
+    const box = document.getElementById('chapterResourceMessage');
+    if (!box) return;
+    if (!message) {
+        box.classList.add('hidden');
+        return;
+    }
+    const palette = type === 'error'
+        ? 'bg-red-100 border border-red-200 text-red-800'
+        : type === 'success'
+            ? 'bg-green-100 border border-green-200 text-green-800'
+            : 'bg-blue-100 border border-blue-200 text-blue-800';
+    box.className = `${palette} text-sm rounded-lg px-3 py-2`;
+    box.textContent = message;
+    box.classList.remove('hidden');
+    setTimeout(() => box.classList.add('hidden'), 3500);
+}
+
+function viewAssignmentDetails(assignmentId) {
+    // Redirect to assignment details page
+    window.location.href = `/faculty/assignment/${assignmentId}`;
+}
+
+function setupEventListeners() {
+    // Back button
+    document.getElementById('backToClasses').addEventListener('click', () => {
+        document.getElementById('classManagementView').classList.add('hidden');
+        document.getElementById('classesGridView').classList.remove('hidden');
+    });
+    
+    // Section tabs
+    document.querySelectorAll('.section-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const section = this.dataset.section;
+            
+            document.querySelectorAll('.section-tab').forEach(t => {
+                t.classList.remove('border-acrm-orange', 'text-acrm-navy');
+                t.classList.add('border-transparent', 'text-gray-600');
+            });
+            
+            this.classList.add('border-acrm-orange', 'text-acrm-navy');
+            this.classList.remove('border-transparent', 'text-gray-600');
+            
+            document.querySelectorAll('.section-content').forEach(content => content.classList.add('hidden'));
+            document.getElementById(`${section}-section`).classList.remove('hidden');
+        });
+    });
+    
+    // Add Assignment button
+    document.getElementById('addAssignmentBtn').addEventListener('click', () => {
+        document.getElementById('assignmentModal').classList.remove('hidden');
+    });
+    
+    // Close modal buttons
+    document.getElementById('closeAssignmentModal').addEventListener('click', () => {
+        document.getElementById('assignmentModal').classList.add('hidden');
+    });
+    
+    document.getElementById('assignmentModal').addEventListener('click', (e) => {
+        if (e.target.id === 'assignmentModal') {
+            document.getElementById('assignmentModal').classList.add('hidden');
+        }
+    });
+    
+    // Assignment form submit
+    document.getElementById('assignmentForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = {
+            class_faculty_id: currentClassFacultyId,
+            title: document.getElementById('assignmentTitle').value,
+            description: document.getElementById('assignmentDescription').value,
+            due_date: document.getElementById('assignmentDueDate').value
+        };
+        
+        try {
+            const response = await fetch('/faculty/api/create-assignment', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(formData)
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                document.getElementById('assignmentModal').classList.add('hidden');
+                document.getElementById('assignmentForm').reset();
+                loadAssignments(currentClassFacultyId);
+            } else {
+                alert('Error creating assignment: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error creating assignment');
+        }
+    });
+
+    const addChapterBtn = document.getElementById('addChapterBtn');
+    if (addChapterBtn) {
+        addChapterBtn.addEventListener('click', () => toggleAddChapterForm());
+    }
+
+    const cancelChapterBtn = document.getElementById('cancelChapterFormBtn');
+    if (cancelChapterBtn) {
+        cancelChapterBtn.addEventListener('click', () => toggleAddChapterForm(false));
+    }
+
+    const addChapterForm = document.getElementById('addChapterForm');
+    if (addChapterForm) {
+        addChapterForm.addEventListener('submit', handleAddChapterSubmit);
+    }
+
+    const backToChaptersBtn = document.getElementById('backToChaptersBtn');
+    if (backToChaptersBtn) {
+        backToChaptersBtn.addEventListener('click', () => {
+            currentChapterId = null;
+            document.getElementById('chapterDetailPanel').classList.add('hidden');
+            document.getElementById('backToChaptersBtn').classList.add('hidden');
+            document.getElementById('uploadChapterResourceBtn').classList.add('hidden');
+            document.getElementById('chaptersList').classList.remove('hidden');
+            closeChapterUploadOverlay(true);
+        });
+    }
+
+    const uploadChapterBtn = document.getElementById('uploadChapterResourceBtn');
+    if (uploadChapterBtn) {
+        uploadChapterBtn.addEventListener('click', () => {
+            if (!currentChapterId) {
+                showChapterResourceMessage('Open a chapter first.', 'error');
+                return;
+            }
+            openChapterUploadOverlay();
+        });
+    }
+}
+</script>
+{% endblock %}

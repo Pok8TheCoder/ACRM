@@ -1,0 +1,70 @@
+/* Grid Background Styles */
+
+.grid-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.grid-minor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+}
+
+.grid-major {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(to right, var(--grid-color-major) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-color-major) 1px, transparent 1px);
+}
+
+/* Origin Marker */
+.origin-marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+}
+
+.origin-x {
+  position: absolute;
+  top: 0;
+  left: -30px;
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(239, 71, 111, 0.5), transparent);
+}
+
+.origin-y {
+  position: absolute;
+  top: -30px;
+  left: 0;
+  width: 1px;
+  height: 60px;
+  background: linear-gradient(180deg, transparent, rgba(6, 214, 160, 0.5), transparent);
+}
+
+.origin-dot {
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+}

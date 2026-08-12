@@ -1,0 +1,380 @@
+{% extends "faculty/layout.html" %}
+{% block page_title %}Resources Library{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-acrm-navy">Subjects Library</h2>
+            <button id="refreshSubjects" class="text-sm text-acrm-orange hover:text-orange-600">Refresh</button>
+        </div>
+        <div id="subjectsResourceList" class="space-y-3 max-h-[70vh] overflow-auto">
+            <p class="text-gray-500">Loading subjects...</p>
+        </div>
+    </div>
+    <div class="lg:col-span-2 bg-white rounded-lg shadow p-6">
+        <div id="subjectDetails" class="space-y-4">
+            <div>
+                <p class="text-sm text-gray-500">Selected Subject</p>
+                <h2 id="selectedSubjectTitle" class="text-2xl font-bold text-acrm-navy">Choose a subject</h2>
+                <p id="selectedSubjectMeta" class="text-gray-500 text-sm mt-1"></p>
+            </div>
+            <div id="subjectDescriptionBlock" class="text-gray-600"></div>
+            <div>
+                <h3 class="text-lg font-semibold text-acrm-navy mb-2">Resources</h3>
+                <div id="subjectResourcesList" class="space-y-3 bg-gray-50 border border-gray-200 rounded-lg p-4 min-h-[150px]">
+                    <p class="text-gray-500">Select a subject to view resources.</p>
+                </div>
+            </div>
+            <div class="border-t border-gray-200 pt-4">
+                <h3 class="text-lg font-semibold text-acrm-navy mb-3">Resource Preview</h3>
+                <div id="resourcePreviewPanel" class="bg-gray-50 border border-gray-200 rounded-lg p-4 min-h-[200px] text-center text-gray-500">
+                    Select a resource to preview.
+                </div>
+            </div>
+            <div class="border-t border-gray-200 pt-4">
+                <h3 class="text-lg font-semibold text-acrm-navy mb-3">Upload Resource</h3>
+                <form id="resourceUploadForm" class="space-y-3">
+                    <input type="text" id="resourceTitle" placeholder="Title (optional, auto-uses file names)" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    <textarea id="resourceDescription" placeholder="Description (optional)" class="w-full px-4 py-2 border border-gray-300 rounded-lg" rows="3"></textarea>
+                    <div class="space-y-2">
+                        <input type="file" id="resourceFile" class="hidden" multiple webkitdirectory mozdirectory>
+                        <div id="resourceDropzone" class="w-full border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 hover:bg-gray-100 transition cursor-pointer px-4 py-8 text-center flex flex-col items-center gap-3">
+                            <svg class="w-10 h-10 text-acrm-orange" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 15v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4m-4-7-5-5-5 5m5-5v12" />
+                            </svg>
+                            <div>
+                                <p class="font-semibold text-acrm-navy">Drag & drop files or folders</p>
+                                <p class="text-sm text-gray-500">You can also <span class="text-acrm-orange underline">browse</span> to pick files.</p>
+                            </div>
+                            <p class="text-xs text-gray-400">Hold Ctrl/⌘ to drop multiple folders.</p>
+                        </div>
+                        <div id="resourceFileList" class="text-sm text-gray-600 bg-white border border-gray-200 rounded-lg px-3 py-2">No files queued yet.</div>
+                    </div>
+                    <p class="text-xs text-gray-500">Tip: Select multiple files or choose a folder to upload its contents in one go.</p>
+                    <button type="submit" class="w-full px-4 py-2 bg-acrm-orange text-white rounded-lg hover:bg-orange-600 transition font-semibold">Upload Resource</button>
+                </form>
+                <div id="resourceMessage" class="hidden mt-3 p-3 rounded-lg text-sm"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let subjectsCatalog = [];
+let currentSubjectId = null;
+let resourceCatalog = {};
+let resourcePreviewPanel = null;
+let queuedResourceFiles = [];
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadSubjectCatalog();
+    document.getElementById('refreshSubjects').addEventListener('click', loadSubjectCatalog);
+    document.getElementById('resourceUploadForm').addEventListener('submit', handleResourceUpload);
+    resourcePreviewPanel = document.getElementById('resourcePreviewPanel');
+    initResourceDropzone();
+    renderQueuedResourceFiles();
+});
+
+function loadSubjectCatalog() {
+    fetch('/faculty/api/subjects')
+        .then(r => r.json())
+        .then(data => {
+            subjectsCatalog = data && data.subjects ? data.subjects : [];
+            renderSubjectList();
+            if (subjectsCatalog.length > 0) {
+                selectSubject(subjectsCatalog[0].id);
+            } else {
+                resetSubjectDetails();
+            }
+        });
+}
+
+function renderSubjectList() {
+    const container = document.getElementById('subjectsResourceList');
+    if (subjectsCatalog.length === 0) {
+        container.innerHTML = '<p class="text-gray-500">No subjects available.</p>';
+        return;
+    }
+    container.innerHTML = subjectsCatalog.map(sub => `
+        <div class="p-4 border rounded-lg cursor-pointer ${sub.id === currentSubjectId ? 'border-acrm-orange bg-orange-50' : 'border-gray-200 hover:border-acrm-orange'}" onclick="selectSubject(${sub.id})">
+            <p class="text-acrm-navy font-semibold">${sub.name}</p>
+            <p class="text-gray-500 text-sm">${sub.subject_id}</p>
+            <p class="text-xs text-gray-400 mt-1">${sub.subject_type === 'semester' ? 'Semester Subject' : 'Direct Student Subject'}</p>
+        </div>
+    `).join('');
+}
+
+function resetSubjectDetails() {
+    currentSubjectId = null;
+    document.getElementById('selectedSubjectTitle').textContent = 'Choose a subject';
+    document.getElementById('selectedSubjectMeta').textContent = '';
+    document.getElementById('subjectDescriptionBlock').innerHTML = '';
+    document.getElementById('subjectResourcesList').innerHTML = '<p class="text-gray-500">No subject selected.</p>';
+    resetResourcePreview();
+}
+
+function selectSubject(subjectId) {
+    currentSubjectId = subjectId;
+    renderSubjectList();
+    loadSubjectResources(subjectId);
+}
+
+function loadSubjectResources(subjectId) {
+    fetch(`/faculty/api/subjects/${subjectId}/resources`)
+        .then(r => r.json())
+        .then(data => {
+            if (!data.subject) {
+                resetSubjectDetails();
+                return;
+            }
+            const subject = data.subject;
+            document.getElementById('selectedSubjectTitle').textContent = subject.name;
+            const meta = subject.subject_type === 'semester'
+                ? `${subject.program_name || 'Program'} • Semester ${subject.semester_number || '-'}`
+                : `${subject.student_count || 0} direct student(s)`;
+            document.getElementById('selectedSubjectMeta').textContent = `${subject.subject_id} • ${meta}`;
+            document.getElementById('subjectDescriptionBlock').textContent = subject.description || 'No description provided.';
+            renderResourcesList(data.resources || []);
+            resetResourcePreview();
+        });
+}
+
+function renderResourcesList(resources) {
+    const container = document.getElementById('subjectResourcesList');
+    resourceCatalog = {};
+    if (resources.length === 0) {
+        container.innerHTML = '<p class="text-gray-500">No resources uploaded yet.</p>';
+        resetResourcePreview();
+        return;
+    }
+    resources.forEach(res => {
+        resourceCatalog[res.id] = res;
+    });
+    container.innerHTML = resources.map(res => `
+        <div class="bg-white border border-gray-200 rounded-lg p-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+                <p class="font-semibold text-acrm-navy">${res.title}</p>
+                <p class="text-sm text-gray-500">${res.description || 'No description'}</p>
+                <p class="text-xs text-gray-400 mt-1">Uploaded on ${new Date(res.uploaded_at).toLocaleString()}</p>
+            </div>
+            <div class="flex items-center gap-2">
+                ${res.preview_type && res.preview_type !== 'none' ? `<button onclick="previewResource(${res.id})" class="px-3 py-2 text-sm border border-acrm-orange text-acrm-orange rounded-lg hover:bg-orange-50">Preview</button>` : ''}
+                <button onclick="downloadResource(${res.id})" class="px-3 py-2 text-sm bg-acrm-orange text-white rounded-lg hover:bg-orange-600">Download</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function handleResourceUpload(event) {
+    event.preventDefault();
+    if (!currentSubjectId) {
+        return showResourceMessage('Select a subject first', 'error');
+    }
+    const fileInput = document.getElementById('resourceFile');
+    const files = queuedResourceFiles.length ? queuedResourceFiles : Array.from(fileInput.files || []);
+    if (!files.length) {
+        return showResourceMessage('Please choose at least one file (or folder)', 'error');
+    }
+    const formData = new FormData();
+    formData.append('title', document.getElementById('resourceTitle').value);
+    formData.append('description', document.getElementById('resourceDescription').value);
+    files.forEach(file => {
+        formData.append('files', file, file.name);
+        formData.append('relative_paths', file.webkitRelativePath || file.name);
+    });
+    fetch(`/faculty/api/subjects/${currentSubjectId}/upload-resource`, {
+        method: 'POST',
+        body: formData
+    }).then(r => r.json()).then(result => {
+        if (result.status === 'success') {
+            showResourceMessage(result.message || `Uploaded ${files.length} resource(s)`, 'success');
+            document.getElementById('resourceUploadForm').reset();
+            clearQueuedResourceFiles();
+            loadSubjectResources(currentSubjectId);
+        } else {
+            showResourceMessage(result.message || 'Failed to upload resource', 'error');
+        }
+    }).catch(() => {
+        showResourceMessage('Failed to upload resource', 'error');
+    });
+}
+
+function downloadResource(resourceId) {
+    window.location.href = `/faculty/api/resources/${resourceId}/download`;
+}
+
+function previewResource(resourceId) {
+    const resource = resourceCatalog[resourceId];
+    if (!resource || resource.preview_type === 'none') {
+        return setPreviewPanelContent('<p class="text-gray-500">Preview not available for this file type.</p>', 'text-center');
+    }
+    setPreviewPanelContent('<p class="text-gray-500 text-sm">Loading preview...</p>', 'text-center');
+
+    if (resource.preview_type === 'text') {
+        if (!resource.text_preview_url) {
+            return setPreviewPanelContent('<p class="text-gray-500">Preview not available.</p>', 'text-center');
+        }
+        fetch(resource.text_preview_url)
+            .then(r => r.json())
+            .then(data => {
+                if (data.status !== 'success') {
+                    return setPreviewPanelContent('<p class="text-red-500">Unable to preview this file.</p>', 'text-center');
+                }
+                const truncatedNote = data.truncated ? '<p class="text-xs text-gray-400 mt-2">Preview limited to the first 200 KB.</p>' : '';
+                setPreviewPanelContent(`
+                    <div class="space-y-2 text-left">
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span>${escapeHtml(resource.file_name || resource.title)}</span>
+                            ${data.truncated ? '<span>Partial preview</span>' : ''}
+                        </div>
+                        <pre class="whitespace-pre-wrap text-sm text-gray-800 max-h-96 overflow-y-auto bg-white border border-gray-200 rounded-lg p-3">${escapeHtml(data.content)}</pre>
+                        ${truncatedNote}
+                    </div>
+                `);
+            })
+            .catch(() => setPreviewPanelContent('<p class="text-red-500">Unable to preview this file.</p>', 'text-center'));
+        return;
+    }
+
+    if (resource.preview_type === 'image' && resource.preview_stream_url) {
+        return setPreviewPanelContent(`
+            <img src="${resource.preview_stream_url}?t=${Date.now()}" alt="${escapeHtml(resource.title)} preview" class="max-h-[500px] mx-auto rounded shadow" />
+        `);
+    }
+
+    if (resource.preview_type === 'video' && resource.preview_stream_url) {
+        return setPreviewPanelContent(`
+            <video controls class="w-full rounded shadow">
+                <source src="${resource.preview_stream_url}?t=${Date.now()}" type="${resource.mime_type || 'video/mp4'}">
+                Your browser does not support the video tag.
+            </video>
+        `);
+    }
+
+    if (resource.preview_type === 'pdf' && resource.preview_stream_url) {
+        return setPreviewPanelContent(`
+            <iframe src="${resource.preview_stream_url}?inline=1#toolbar=1" class="w-full h-[500px] rounded border border-gray-200 bg-white" title="${escapeHtml(resource.title)} PDF preview"></iframe>
+            <p class="text-xs text-gray-400 text-right mt-2">If the preview fails, <a href="${resource.preview_stream_url}" target="_blank" class="text-acrm-orange underline">open the PDF in a new tab</a>.</p>
+        `);
+    }
+
+    if (resource.preview_type === 'document') {
+        if (resource.preview_open_url) {
+            window.open(`${resource.preview_open_url}?inline=1`, '_blank');
+            return setPreviewPanelContent('<p class="text-gray-500">Opening document in a new tab...</p>', 'text-center');
+        }
+        return setPreviewPanelContent('<p class="text-gray-500">Preview not available for this document.</p>', 'text-center');
+    }
+
+    return setPreviewPanelContent('<p class="text-gray-500">Preview not available for this file.</p>', 'text-center');
+}
+
+function showResourceMessage(message, type) {
+    const el = document.getElementById('resourceMessage');
+    el.classList.remove('hidden');
+    el.className = `${type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} mt-3 p-3 rounded-lg text-sm`;
+    el.textContent = message;
+}
+
+function resetResourcePreview() {
+    setPreviewPanelContent('<p class="text-gray-500">Select a resource to preview.</p>', 'text-center');
+}
+
+function setPreviewPanelContent(html, extraClasses = '') {
+    if (!resourcePreviewPanel) {
+        resourcePreviewPanel = document.getElementById('resourcePreviewPanel');
+    }
+    if (!resourcePreviewPanel) {
+        return;
+    }
+    const baseClass = 'bg-gray-50 border border-gray-200 rounded-lg p-4 min-h-[200px]';
+    resourcePreviewPanel.className = extraClasses ? `${baseClass} ${extraClasses}` : baseClass;
+    resourcePreviewPanel.innerHTML = html;
+}
+
+function escapeHtml(value) {
+    if (value === null || value === undefined) {
+        return '';
+    }
+    return String(value).replace(/[&<>"']/g, (char) => {
+        const entities = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        };
+        return entities[char] || char;
+    });
+}
+
+function initResourceDropzone() {
+    const dropzone = document.getElementById('resourceDropzone');
+    const fileInput = document.getElementById('resourceFile');
+    if (!dropzone || !fileInput) return;
+
+    const setActive = (isActive) => {
+        dropzone.classList.toggle('border-acrm-orange', isActive);
+        dropzone.classList.toggle('bg-orange-50', isActive);
+    };
+
+    const handleFiles = (files) => {
+        if (!files || !files.length) {
+            queuedResourceFiles = [];
+        } else {
+            queuedResourceFiles = Array.from(files);
+        }
+        renderQueuedResourceFiles();
+    };
+
+    dropzone.addEventListener('click', () => fileInput.click());
+    dropzone.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        setActive(true);
+    });
+    dropzone.addEventListener('dragleave', (event) => {
+        const nextTarget = event.relatedTarget;
+        if (!nextTarget || !dropzone.contains(nextTarget)) {
+            setActive(false);
+        }
+    });
+    dropzone.addEventListener('drop', (event) => {
+        event.preventDefault();
+        setActive(false);
+        if (event.dataTransfer?.files?.length) {
+            handleFiles(event.dataTransfer.files);
+            fileInput.value = '';
+        }
+    });
+    fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+}
+
+function renderQueuedResourceFiles() {
+    const list = document.getElementById('resourceFileList');
+    if (!list) return;
+    if (!queuedResourceFiles.length) {
+        list.innerHTML = 'No files queued yet.';
+        return;
+    }
+    const previewItems = queuedResourceFiles.slice(0, 5).map(file => `<li class="truncate">${escapeHtml(file.webkitRelativePath || file.name)}</li>`).join('');
+    const extraCount = queuedResourceFiles.length > 5 ? `<li class="text-gray-400">+${queuedResourceFiles.length - 5} more</li>` : '';
+    list.innerHTML = `
+        <div class="flex items-center justify-between">
+            <p class="font-semibold text-acrm-navy">${queuedResourceFiles.length} file(s) ready</p>
+            <button type="button" class="text-xs text-red-500 hover:text-red-600" onclick="clearQueuedResourceFiles()">Clear</button>
+        </div>
+        <ul class="mt-2 text-xs text-gray-600 space-y-1 max-h-32 overflow-y-auto">${previewItems}${extraCount}</ul>
+    `;
+}
+
+function clearQueuedResourceFiles() {
+    queuedResourceFiles = [];
+    const fileInput = document.getElementById('resourceFile');
+    if (fileInput) {
+        fileInput.value = '';
+    }
+    renderQueuedResourceFiles();
+}
+</script>
+{% endblock %}

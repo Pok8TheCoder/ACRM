@@ -1,0 +1,77 @@
+/* ─────────────────────────────────────────────────────────────
+   InfiniteCanvas — React Flow wrapper
+───────────────────────────────────────────────────────────── */
+
+.rf-canvas-wrapper {
+  flex: 1;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Override React Flow defaults to match our dark theme */
+.react-flow__background {
+  background: var(--bg-canvas) !important;
+}
+
+.react-flow__background-pattern {
+  stroke: var(--border) !important;
+}
+
+/* Controls panel */
+.react-flow__controls {
+  background: var(--bg-panel) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.react-flow__controls-button {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border) !important;
+  color: var(--text-secondary) !important;
+  transition: background 0.1s, color 0.1s !important;
+}
+
+.react-flow__controls-button:hover {
+  background: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+.react-flow__controls-button:last-child { border-bottom: none !important; }
+
+.react-flow__controls-button svg { fill: currentColor !important; }
+
+/* Minimap */
+.react-flow__minimap {
+  background: var(--bg-panel) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  overflow: hidden;
+}
+
+/* Edge paths */
+.react-flow__edge-path {
+  stroke: var(--border-light) !important;
+  stroke-width: 1.5 !important;
+}
+
+/* Selection box */
+.react-flow__selection {
+  background: var(--accent-dim) !important;
+  border: 1px solid var(--accent) !important;
+}
+
+/* Node wrapper — remove default border */
+.react-flow__node {
+  border: none !important;
+  padding: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+/* Timetable nodes need overflow visible for the NodeResizer handles */
+.react-flow__node-timetable,
+.react-flow__node-group {
+  overflow: visible !important;
+}

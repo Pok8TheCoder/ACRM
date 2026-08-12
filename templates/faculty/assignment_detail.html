@@ -1,0 +1,191 @@
+{% extends "faculty/layout.html" %}
+
+{% block page_title %}Assignment Details{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Back Button -->
+    <a href="/faculty/classroom" class="flex items-center space-x-2 text-acrm-orange hover:text-orange-600 transition font-medium">
+        <i class="fas fa-arrow-left"></i>
+        <span>Back to Classroom</span>
+    </a>
+
+    <!-- Assignment Info Header -->
+    <div class="bg-gradient-to-r from-acrm-orange to-orange-600 rounded-lg shadow-lg p-8 text-white">
+        <h1 class="text-3xl font-bold mb-4" id="assignmentTitle">Assignment Title</h1>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+                <p class="text-orange-100 text-sm">Due Date</p>
+                <p class="text-xl font-semibold" id="assignmentDueDate"></p>
+            </div>
+            <div>
+                <p class="text-orange-100 text-sm">Status</p>
+                <p class="text-xl font-semibold" id="assignmentStatus"></p>
+            </div>
+            <div>
+                <p class="text-orange-100 text-sm">Description</p>
+                <p class="text-sm mt-1" id="assignmentDescription"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submission Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-white rounded-lg shadow p-6">
+            <i class="fas fa-users text-blue-500 text-2xl mb-2"></i>
+            <p class="text-gray-600 text-sm">Total Students</p>
+            <p class="text-3xl font-bold text-blue-700" id="totalStudents">0</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <i class="fas fa-check-circle text-green-500 text-2xl mb-2"></i>
+            <p class="text-gray-600 text-sm">Submitted</p>
+            <p class="text-3xl font-bold text-green-700" id="submittedCount">0</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <i class="fas fa-clock text-orange-500 text-2xl mb-2"></i>
+            <p class="text-gray-600 text-sm">Not Submitted</p>
+            <p class="text-3xl font-bold text-orange-700" id="notSubmittedCount">0</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <i class="fas fa-stamp text-purple-500 text-2xl mb-2"></i>
+            <p class="text-gray-600 text-sm">Verified</p>
+            <p class="text-3xl font-bold text-purple-700" id="verifiedCount">0</p>
+        </div>
+    </div>
+
+    <!-- Student Submissions List -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-acrm-navy">Student Submissions</h2>
+            <div class="flex space-x-2">
+                <select id="filterStatus" class="px-4 py-2 border border-gray-300 rounded-lg text-sm">
+                    <option value="">All Statuses</option>
+                    <option value="submitted">Submitted</option>
+                    <option value="not_submitted">Not Submitted</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="studentsList" class="space-y-3">
+            <!-- Students will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<script>
+const assignmentId = parseInt(window.location.pathname.split('/').pop());
+let allStudents = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadAssignmentDetails();
+    
+    document.getElementById('filterStatus').addEventListener('change', filterStudents);
+});
+
+function loadAssignmentDetails() {
+    fetch(`/api/assignment/${assignmentId}`)
+        .then(res => res.json())
+        .then(data => {
+            const assignment = data.assignment;
+            allStudents = data.students;
+            
+            // Update header
+            document.getElementById('assignmentTitle').textContent = assignment.title;
+            document.getElementById('assignmentDescription').textContent = assignment.description;
+            document.getElementById('assignmentDueDate').textContent = new Date(assignment.due_date).toLocaleString();
+            document.getElementById('assignmentStatus').textContent = assignment.status.charAt(0).toUpperCase() + assignment.status.slice(1);
+            
+            // Update stats
+            document.getElementById('totalStudents').textContent = allStudents.length;
+            const submitted = allStudents.filter(s => s.submission_status === 'submitted').length;
+            const notSubmitted = allStudents.filter(s => s.submission_status === 'not_submitted').length;
+            const verified = allStudents.filter(s => s.verification_status === 'verified').length;
+            
+            document.getElementById('submittedCount').textContent = submitted;
+            document.getElementById('notSubmittedCount').textContent = notSubmitted;
+            document.getElementById('verifiedCount').textContent = verified;
+            
+            renderStudents(allStudents);
+        });
+}
+
+function renderStudents(students) {
+    const list = document.getElementById('studentsList');
+    list.innerHTML = '';
+    
+    if (students.length === 0) {
+        list.innerHTML = '<div class="text-center py-8 text-gray-600">No students found</div>';
+        return;
+    }
+    
+    students.forEach(student => {
+        const card = document.createElement('div');
+        card.className = 'border border-gray-200 rounded-lg p-4 hover:shadow-md transition flex items-center justify-between';
+        
+        const initials = student.name.split(' ').map(n => n[0]).join('');
+        const statusColor = student.submission_status === 'submitted' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700';
+        const statusText = student.submission_status === 'submitted' ? 'Submitted' : 'Not Submitted';
+        const verificationColor = student.verification_status === 'verified' ? 'bg-purple-100 text-purple-700' : 'hidden';
+        
+        card.innerHTML = `
+            <div class="flex items-center space-x-4 flex-1">
+                <div class="w-12 h-12 bg-acrm-orange rounded-full flex items-center justify-center text-white font-bold">
+                    ${initials}
+                </div>
+                <div>
+                    <p class="font-semibold text-acrm-navy">${student.name}</p>
+                    <p class="text-sm text-gray-600">${student.email}</p>
+                    ${student.submission_date ? `<p class="text-xs text-gray-500">Submitted: ${new Date(student.submission_date).toLocaleString()}</p>` : ''}
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <span class="px-3 py-1 ${statusColor} rounded-full text-sm font-medium">${statusText}</span>
+                ${student.verification_status === 'verified' ? `<span class="px-3 py-1 ${verificationColor} rounded-full text-sm font-medium">Verified</span>` : ''}
+                ${student.submission_status === 'submitted' ? `
+                    <div class="flex space-x-2">
+                        <button class="p-2 text-gray-600 hover:text-blue-600 transition" title="Download">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="p-2 text-gray-600 hover:text-green-600 transition" title="Verify" onclick="verifySubmission(${student.id})">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+        
+        list.appendChild(card);
+    });
+}
+
+function filterStudents() {
+    const status = document.getElementById('filterStatus').value;
+    
+    if (!status) {
+        renderStudents(allStudents);
+    } else {
+        const filtered = allStudents.filter(s => s.submission_status === status);
+        renderStudents(filtered);
+    }
+}
+
+function verifySubmission(studentId) {
+    if (confirm('Mark this submission as verified?')) {
+        fetch(`/api/verify-submission`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                assignment_id: assignmentId,
+                student_id: studentId
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                loadAssignmentDetails();
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

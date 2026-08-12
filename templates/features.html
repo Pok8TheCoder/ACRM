@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Features - ACRM{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section class="pt-32 pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-acrm-navy to-acrm-light-navy">
+    <div class="max-w-7xl mx-auto text-center">
+        <h1 class="text-5xl font-bold text-acrm-white mb-6">Powerful Features for Modern Campuses</h1>
+        <p class="text-xl text-gray-100 max-w-2xl mx-auto">Discover how ACRM transforms campus operations and student success</p>
+    </div>
+</section>
+
+<!-- Interactive Features Section -->
+<section class="py-20 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Feature List -->
+            <div class="lg:col-span-1 space-y-4">
+                <button onclick="selectFeature(0)" class="feature-btn w-full text-left p-4 rounded-lg transition-all duration-300 border-l-4 bg-acrm-orange text-acrm-white border-acrm-navy shadow-lg">
+                    <div class="font-bold">Smart Timetable Management</div>
+                    <div class="text-sm opacity-75">Eliminating Chaos</div>
+                </button>
+                <button onclick="selectFeature(1)" class="feature-btn w-full text-left p-4 rounded-lg transition-all duration-300 border-l-4 bg-gray-50 text-acrm-navy border-gray-300 hover:bg-gray-100">
+                    <div class="font-bold">AI-Powered Dropout Prediction</div>
+                    <div class="text-sm opacity-75">Early Intervention</div>
+                </button>
+                <button onclick="selectFeature(2)" class="feature-btn w-full text-left p-4 rounded-lg transition-all duration-300 border-l-4 bg-gray-50 text-acrm-navy border-gray-300 hover:bg-gray-100">
+                    <div class="font-bold">Personalized Intervention & Counseling</div>
+                    <div class="text-sm opacity-75">Guiding Success</div>
+                </button>
+            </div>
+
+            <!-- Feature Details -->
+            <div class="lg:col-span-3">
+                <div id="feature-content" class="bg-gradient-to-br from-blue-500 to-cyan-500 p-1 rounded-xl">
+                    <div class="bg-acrm-white p-8 rounded-lg">
+                        <div class="flex items-center mb-6 gap-4">
+                            <div class="text-acrm-orange text-5xl"><i class="fas fa-clock"></i></div>
+                            <div>
+                                <h2 id="feature-title" class="text-3xl font-bold text-acrm-navy">Smart Timetable Management</h2>
+                                <p id="feature-subtitle" class="text-acrm-orange font-semibold">Eliminating Chaos</p>
+                            </div>
+                        </div>
+
+                        <div id="feature-benefits" class="space-y-3 mb-8">
+                            <!-- Populated by JS -->
+                        </div>
+
+                        <div class="bg-acrm-orange/10 border-l-4 border-acrm-orange p-4 rounded">
+                            <p id="feature-highlight" class="font-bold text-acrm-navy">✨ Eliminates Wasted Class Time & Administrative Burden</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Key Metrics -->
+<section class="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+    <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-acrm-navy mb-12 text-center">Impact by the Numbers</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="bg-acrm-white p-8 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 text-center group">
+                <div class="text-4xl font-bold text-acrm-orange group-hover:text-acrm-navy transition-colors mb-2">45%</div>
+                <p class="text-gray-600 group-hover:text-acrm-navy transition-colors font-medium">Reduction in Administrative Time</p>
+            </div>
+            <div class="bg-acrm-white p-8 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 text-center group">
+                <div class="text-4xl font-bold text-acrm-orange group-hover:text-acrm-navy transition-colors mb-2">78%</div>
+                <p class="text-gray-600 group-hover:text-acrm-navy transition-colors font-medium">Improvement in Student Retention</p>
+            </div>
+            <div class="bg-acrm-white p-8 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 text-center group">
+                <div class="text-4xl font-bold text-acrm-orange group-hover:text-acrm-navy transition-colors mb-2">92%</div>
+                <p class="text-gray-600 group-hover:text-acrm-navy transition-colors font-medium">Accuracy in Dropout Prediction</p>
+            </div>
+            <div class="bg-acrm-white p-8 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 text-center group">
+                <div class="text-4xl font-bold text-acrm-orange group-hover:text-acrm-navy transition-colors mb-2">$3.2M</div>
+                <p class="text-gray-600 group-hover:text-acrm-navy transition-colors font-medium">Annual Revenue Recovery</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Grid -->
+<section class="py-20 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-acrm-navy mb-12 text-center">Additional Capabilities</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-gradient-to-br from-acrm-white to-gray-50 p-8 rounded-lg shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 border-t-4 border-acrm-orange group">
+                <div class="text-acrm-orange group-hover:text-acrm-navy transition-colors mb-4 text-4xl">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h3 class="text-xl font-bold text-acrm-navy mb-2 group-hover:text-acrm-orange transition-colors">Real-Time Analytics</h3>
+                <p class="text-gray-600">Dashboard with instant insights</p>
+            </div>
+
+            <div class="bg-gradient-to-br from-acrm-white to-gray-50 p-8 rounded-lg shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 border-t-4 border-acrm-orange group">
+                <div class="text-acrm-orange group-hover:text-acrm-navy transition-colors mb-4 text-4xl">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3 class="text-xl font-bold text-acrm-navy mb-2 group-hover:text-acrm-orange transition-colors">Automated Alerts</h3>
+                <p class="text-gray-600">Proactive notifications for issues</p>
+            </div>
+
+            <div class="bg-gradient-to-br from-acrm-white to-gray-50 p-8 rounded-lg shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 border-t-4 border-acrm-orange group">
+                <div class="text-acrm-orange group-hover:text-acrm-navy transition-colors mb-4 text-4xl">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="text-xl font-bold text-acrm-navy mb-2 group-hover:text-acrm-orange transition-colors">Team Collaboration</h3>
+                <p class="text-gray-600">Seamless coordination tools</p>
+            </div>
+
+            <div class="bg-gradient-to-br from-acrm-white to-gray-50 p-8 rounded-lg shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 border-t-4 border-acrm-orange group">
+                <div class="text-acrm-orange group-hover:text-acrm-navy transition-colors mb-4 text-4xl">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 class="text-xl font-bold text-acrm-navy mb-2 group-hover:text-acrm-orange transition-colors">AI Recommendations</h3>
+                <p class="text-gray-600">Smart suggestions for actions</p>
+            </div>
+
+            <div class="bg-gradient-to-br from-acrm-white to-gray-50 p-8 rounded-lg shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 border-t-4 border-acrm-orange group">
+                <div class="text-acrm-orange group-hover:text-acrm-navy transition-colors mb-4 text-4xl">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3 class="text-xl font-bold text-acrm-navy mb-2 group-hover:text-acrm-orange transition-colors">Scheduling Optimization</h3>
+                <p class="text-gray-600">Conflict-free timetables</p>
+            </div>
+
+            <div class="bg-gradient-to-br from-acrm-white to-gray-50 p-8 rounded-lg shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 border-t-4 border-acrm-orange group">
+                <div class="text-acrm-orange group-hover:text-acrm-navy transition-colors mb-4 text-4xl">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3 class="text-xl font-bold text-acrm-navy mb-2 group-hover:text-acrm-orange transition-colors">Performance Tracking</h3>
+                <p class="text-gray-600">Measure success metrics</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-acrm-navy to-acrm-light-navy">
+    <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-4xl font-bold text-acrm-white mb-6">Ready to Transform Your Campus?</h2>
+        <p class="text-xl text-gray-100 mb-8">Experience the power of intelligent campus management.</p>
+        <a href="/demo">
+            <button class="font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 bg-acrm-orange text-acrm-white hover:bg-acrm-dark-navy shadow-lg hover:shadow-xl px-8 py-4 text-lg">
+                Schedule Your Demo
+            </button>
+        </a>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const features = [
+    {
+        title: 'Smart Timetable Management',
+        subtitle: 'Eliminating Chaos',
+        color: 'from-blue-500 to-cyan-500',
+        benefits: [
+            'Automated, Conflict-Free Scheduling',
+            'Intelligent algorithms optimize class, room, and faculty assignments',
+            'Minimizes overlaps and maximizes resource utilization',
+            'Real-time adjustments for teacher absences or room changes',
+            'Ensures uninterrupted learning experiences',
+        ],
+        highlight: 'Eliminates Wasted Class Time & Administrative Burden',
+    },
+    {
+        title: 'AI-Powered Dropout Prediction',
+        subtitle: 'Early Intervention',
+        color: 'from-purple-500 to-pink-500',
+        benefits: [
+            'Identify Vulnerable Students Early',
+            'Machine Learning models analyze academic performance',
+            'Analyzes attendance and engagement data',
+            'Predicts students at risk with high accuracy',
+            'Pinpoint exact struggling areas',
+            'Enables targeted support strategies',
+        ],
+        highlight: 'Early Detection Saves Lives and Revenue',
+    },
+    {
+        title: 'Personalized Intervention & Counseling',
+        subtitle: 'Guiding Success',
+        color: 'from-green-500 to-emerald-500',
+        benefits: [
+            'Timely, Targeted Support',
+            'ACRM automatically triggers alerts for advisors',
+            'Personalized recommendations for tutoring',
+            'Workshops and study group suggestions',
+            'Proactive Resource Connection',
+            'Ensures no student falls through the cracks',
+        ],
+        highlight: 'Connect Students with Exactly What They Need',
+    },
+];
+
+function selectFeature(index) {
+    const feature = features[index];
+    document.querySelectorAll('.feature-btn').forEach((btn, i) => {
+        if (i === index) {
+            btn.className = 'feature-btn w-full text-left p-4 rounded-lg transition-all duration-300 border-l-4 bg-acrm-orange text-acrm-white border-acrm-navy shadow-lg';
+        } else {
+            btn.className = 'feature-btn w-full text-left p-4 rounded-lg transition-all duration-300 border-l-4 bg-gray-50 text-acrm-navy border-gray-300 hover:bg-gray-100';
+        }
+    });
+
+    document.getElementById('feature-title').textContent = feature.title;
+    document.getElementById('feature-subtitle').textContent = feature.subtitle;
+    document.getElementById('feature-highlight').textContent = '✨ ' + feature.highlight;
+    
+    const benefitsHtml = feature.benefits.map(b => `
+        <div class="flex items-start gap-3">
+            <i class="fas fa-check-circle text-acrm-orange flex-shrink-0 mt-1"></i>
+            <span class="text-gray-700">${b}</span>
+        </div>
+    `).join('');
+    document.getElementById('feature-benefits').innerHTML = benefitsHtml;
+
+    const contentDiv = document.getElementById('feature-content').parentElement.querySelector('div');
+    contentDiv.className = `bg-gradient-to-br ${feature.color} p-1 rounded-xl`;
+}
+</script>
+{% endblock %}

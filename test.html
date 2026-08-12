@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arrow-Free Custom Scrollbar (Single File)</title>
+    
+    <style>
+        /* Base page styling */
+        body {
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e9ecef;
+        }
+
+        .content-block {
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Force height to ensure the page scrolls significantly */
+        .tall-content {
+            height: 200vh; 
+        }
+        
+        /*
+        ==================================================
+        1. WebKit Scrollbar Styling (Chrome, Safari, Edge)
+        ==================================================
+        */
+        
+        /* Set the overall size of the scrollbar */
+        html::-webkit-scrollbar {
+            /* Vertical scrollbar width */
+            width: 15px; 
+        }
+
+        /* 2. Style the SCROLLBAR TRACK (The fixed background area) */
+        html::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+            border-radius: 10px;
+            border-left: 1px solid #ddd; 
+        }
+
+        /* 3. Style the SCROLLBAR THUMB (The draggable handle) */
+        html::-webkit-scrollbar-thumb {
+            background-color: #4a90e2; 
+            border-radius: 10px;
+            /* Padding around the thumb inside the track area */
+            border: 3px solid #f1f1f1; 
+        }
+
+        /* Thumb on hover */
+        html::-webkit-scrollbar-thumb:hover {
+            background-color: #2b6cb0; 
+        }
+
+        /* CRITICAL: HIDE THE ARROW BUTTONS */
+        html::-webkit-scrollbar-button {
+            /* Setting width and height to 0 removes the scroll buttons */
+            height: 0;
+            width: 0;
+            background: transparent;
+        }
+
+
+        /*
+        ==================================================
+        4. Firefox Scrollbar Styling
+        ==================================================
+        */
+        
+        html {
+            /* Set thumb color and track color separately */
+            scrollbar-color: #4a90e2 #f1f1f1; 
+            /* Set width to thin */
+            scrollbar-width: thin; 
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="content-block tall-content">
+        <h1>Single File Custom Scrollbar</h1>
+        <p>This entire file contains both the **HTML content** and all the **CSS styling** within the **`&lt;style&gt;`** tag in the head. This custom scrollbar affects the main page scroll.</p>
+        
+        <h3>All CSS is embedded right here!</h3>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <p>Aenean vel elit scelerisque mauris pellentesque pulvinar. Nunc consequat interdum varius sit amet. Tellus in hac habitasse platea dictumst. Vestibulum rhoncus est pellentesque elit ullamcorper dignissim. Eget nunc lobortis mattis aliquam faucibus purus in massa tempor. Suspendisse potenti nullam ac tortor vitae purus faucibus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+        <p>Volutpat maecenas volutpat blandit aliquam etiam. Tincidunt vitae semper quis lectus nulla at. Mauris a diam maecenas sed enim. Convallis aenean et tortor at. Quis lectus nulla at volutpat diam ut. Nunc vel risus commodo viverra maecenas accumsan. Eget dolor morbi non arcu risus quis varius. Velit euismod in pellentesque massa placerat duis ultricies lacus. Viverra ipsum dolor sit amet consectetur adipiscing elit duis.</p>
+        <p>Nunc aliquet bibendum enim facilisis gravida. Sed ullamcorper morbi tincidunt ornare. Feugiat in ante metus dictum at tempor commodo. Convallis convallis tellus id interdum velit. Massa id neque aliquam vestibulum morbi. Commodo sed egestas egestas fringilla. Vel facilisis volutpat est velit egestas dui id. Nec ultrices dui sapien eget mi proin sed. Semper feugiat nibh sed pulvinar proin. Ultrices vitae auctor eu augue ut lectus arcu bibendum. Risus at ultrices mi tempus imperdiet nulla malesuada.</p>
+        <p>...Keep Scrolling...</p>
+        <p>This is the very end of the content.</p>
+    </div>
+
+</body>
+</html>

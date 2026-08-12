@@ -1,0 +1,128 @@
+{% extends "student/layout.html" %}
+
+{% block page_title %}Timetable{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Timetable Header -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-2xl font-bold text-acrm-navy mb-2">Class Timetable</h2>
+        <p class="text-gray-600">Monday to Saturday, 9:00 AM - 4:15 PM</p>
+    </div>
+
+    <!-- Timetable Grid -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-acrm-dark-navy text-white">
+                    <tr>
+                        <th class="px-6 py-4 text-left font-semibold">Time</th>
+                        <th class="px-6 py-4 text-center font-semibold">Monday</th>
+                        <th class="px-6 py-4 text-center font-semibold">Tuesday</th>
+                        <th class="px-6 py-4 text-center font-semibold">Wednesday</th>
+                        <th class="px-6 py-4 text-center font-semibold">Thursday</th>
+                        <th class="px-6 py-4 text-center font-semibold">Friday</th>
+                        <th class="px-6 py-4 text-center font-semibold">Saturday</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 9:00 - 10:00 -->
+                    <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 font-semibold text-acrm-navy bg-gray-50 w-24">9:00 - 10:00</td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                    </tr>
+
+                    <!-- 10:00 - 11:00 -->
+                    <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 font-semibold text-acrm-navy bg-gray-50">10:00 - 11:00</td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                    </tr>
+
+                    <!-- Break 11:00 - 11:15 -->
+                    <tr class="border-b border-gray-200 bg-yellow-50">
+                        <td class="px-6 py-4 font-semibold text-yellow-700 bg-yellow-100">11:00 - 11:15</td>
+                        <td colspan="6" class="px-6 py-4 text-center text-yellow-700 font-medium">☕ BREAK</td>
+                    </tr>
+
+                    <!-- 11:15 - 12:15 -->
+                    <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 font-semibold text-acrm-navy bg-gray-50">11:15 - 12:15</td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                    </tr>
+
+                    <!-- 12:15 - 1:15 -->
+                    <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 font-semibold text-acrm-navy bg-gray-50">12:15 - 1:15 PM</td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                    </tr>
+
+                    <!-- Break 1:15 - 2:15 -->
+                    <tr class="border-b border-gray-200 bg-yellow-50">
+                        <td class="px-6 py-4 font-semibold text-yellow-700 bg-yellow-100">1:15 - 2:15 PM</td>
+                        <td colspan="6" class="px-6 py-4 text-center text-yellow-700 font-medium">🍽️ LUNCH BREAK</td>
+                    </tr>
+
+                    <!-- 2:15 - 3:15 -->
+                    <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 font-semibold text-acrm-navy bg-gray-50">2:15 - 3:15 PM</td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                    </tr>
+
+                    <!-- 3:15 - 4:15 -->
+                    <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 font-semibold text-acrm-navy bg-gray-50">3:15 - 4:15 PM</td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                        <td class="px-6 py-4 text-center"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Empty State Message -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
+        <i class="fas fa-info-circle text-blue-500 text-3xl mb-3"></i>
+        <p class="text-blue-700 font-medium">Your class schedule will appear here once it's assigned by the administration.</p>
+    </div>
+</div>
+
+<style>
+table {
+    border-collapse: collapse;
+}
+
+td {
+    min-height: 60px;
+    vertical-align: middle;
+}
+</style>
+{% endblock %}

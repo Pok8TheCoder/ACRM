@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Student Dashboard - ACRM{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            padding-top: 0 !important;
+        }
+        #main-navbar {
+            display: none !important;
+        }
+        .footer {
+            display: none !important;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'acrm-navy': '#001F3F',
+                        'acrm-orange': '#FF6B35',
+                        'acrm-light-navy': '#003D5C',
+                        'acrm-dark-navy': '#000A14',
+                        'acrm-white': '#FFFFFF',
+                    },
+                    fontFamily: {
+                        sans: ['Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen bg-gray-100">
+        <!-- Sidebar -->
+        <div class="w-64 bg-acrm-dark-navy text-white shadow-lg flex flex-col">
+            <!-- Logo -->
+            <div class="p-6 border-b border-acrm-navy">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-acrm-orange rounded-lg flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">ACRM</h1>
+                        <p class="text-xs text-gray-400">Student Portal</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Info -->
+            <div class="p-6 border-b border-acrm-navy">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-acrm-orange rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold truncate">{{ session.get('user_name', 'Student') }}</p>
+                        <p class="text-xs text-gray-400">{{ session.get('user_id', '') }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 px-4 py-6 space-y-2">
+                <a href="/student/dashboard" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg {% if request.endpoint == 'student_dashboard' %}bg-acrm-orange text-white{% else %}text-gray-300 hover:bg-acrm-navy transition-colors{% endif %}">
+                    <i class="fas fa-chart-line w-5"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/student/classroom" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg {% if request.endpoint == 'student_classroom' %}bg-acrm-orange text-white{% else %}text-gray-300 hover:bg-acrm-navy transition-colors{% endif %}">
+                    <i class="fas fa-door-open w-5"></i>
+                    <span>Classroom</span>
+                </a>
+                <a href="/student/timetable" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg {% if request.endpoint == 'student_timetable' %}bg-acrm-orange text-white{% else %}text-gray-300 hover:bg-acrm-navy transition-colors{% endif %}">
+                    <i class="fas fa-calendar w-5"></i>
+                    <span>Timetable</span>
+                </a>
+                <a href="/student/knowledge" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg {% if request.endpoint == 'student_knowledge' %}bg-acrm-orange text-white{% else %}text-gray-300 hover:bg-acrm-navy transition-colors{% endif %}">
+                    <i class="fas fa-book w-5"></i>
+                    <span>Knowledge</span>
+                </a>
+            </nav>
+
+            <!-- Logout -->
+            <div class="p-4 border-t border-acrm-navy">
+                <form action="/logout" method="POST">
+                    <button type="submit" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-acrm-navy transition-colors">
+                        <i class="fas fa-sign-out-alt w-5"></i>
+                        <span>Logout</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Bar -->
+            <div class="bg-white shadow-sm px-8 py-4 flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-acrm-navy">{% block page_title %}Dashboard{% endblock %}</h2>
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 hover:bg-gray-100 rounded-lg transition">
+                        <i class="fas fa-bell text-gray-600 text-lg"></i>
+                    </button>
+                    <button class="p-2 hover:bg-gray-100 rounded-lg transition">
+                        <i class="fas fa-cog text-gray-600 text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Page Content -->
+            <div class="flex-1 overflow-auto p-8">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

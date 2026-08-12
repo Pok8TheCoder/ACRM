@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-black via-acrm-dark-navy to-black flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-md">
+        <!-- Logo Section -->
+        <div class="text-center mb-8">
+            <img src="{{ url_for('static', filename='images/acrm-logo.svg') }}" alt="ACRM" class="h-12 mx-auto mb-4">
+            <h1 class="text-3xl font-bold text-white mb-2">{{ institution.name }}</h1>
+            <p class="text-gray-400">Login as <span class="text-acrm-orange font-semibold capitalize">{{ role }}</span></p>
+        </div>
+
+        <!-- Login Card -->
+        <div class="bg-white rounded-lg shadow-2xl p-8">
+            <form id="loginForm">
+                <!-- User ID Field -->
+                <div class="mb-4">
+                    <label for="userId" class="block text-sm font-semibold text-gray-700 mb-2">
+                        {% if role == 'student' %}
+                            Student ID
+                        {% elif role == 'faculty' %}
+                            Faculty ID
+                        {% elif role == 'master_admin' %}
+                            Master Admin ID
+                        {% else %}
+                            Admin ID
+                        {% endif %}
+                    </label>
+                    <input 
+                        type="text" 
+                        id="userId" 
+                        name="user_id" 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-acrm-orange focus:border-transparent transition"
+                        placeholder="Enter your ID"
+                        required
+                    >
+                    <p id="userIdError" class="text-sm text-red-600 mt-1 hidden"></p>
+                </div>
+
+                <!-- Password Field -->
+                <div class="mb-6">
+                    <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+                    <div class="relative">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-acrm-orange focus:border-transparent transition"
+                            placeholder="Enter your password"
+                            required
+                        >
+                        <button 
+                            type="button" 
+                            id="togglePassword" 
+                            class="absolute right-3 top-3 text-gray-500 hover:text-gray-700"
+                        >
+                            <svg id="eyeIcon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p id="passwordError" class="text-sm text-red-600 mt-1 hidden"></p>
+                </div>
+
+                <!-- Error Message -->
+                <div id="errorMessage" class="hidden mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p class="text-sm text-red-700"></p>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loadingMessage" class="hidden mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p class="text-sm text-blue-700 flex items-center gap-2">
+                        <span class="inline-block h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></span>
+                        Verifying credentials...
+                    </p>
+                </div>
+
+                <!-- Submit Button -->
+                <button 
+                    type="submit" 
+                    class="w-full bg-acrm-orange hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center gap-2"
+                    id="submitBtn"
+                >
+                    <span>Login</span>
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                </button>
+
+                <!-- Back Link -->
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('home.login') }}" class="text-sm text-gray-600 hover:text-acrm-orange transition">
+                        Back to Institution Selection
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Demo Credentials -->
+        <div class="text-center mt-8 text-gray-400 text-sm border-t border-gray-700 pt-6 mt-6">
+            <p class="mb-3 font-semibold">Demo Credentials (IIT Delhi):</p>
+            <div class="space-y-2">
+                {% if role == 'student' %}
+                    <p><span class="text-acrm-orange">ID:</span> STD001 | <span class="text-acrm-orange">Password:</span> password123</p>
+                    <p><span class="text-acrm-orange">ID:</span> STD002 | <span class="text-acrm-orange">Password:</span> password123</p>
+                {% elif role == 'faculty' %}
+                    <p><span class="text-acrm-orange">ID:</span> FAC001 | <span class="text-acrm-orange">Password:</span> faculty123</p>
+                    <p><span class="text-acrm-orange">ID:</span> FAC002 | <span class="text-acrm-orange">Password:</span> faculty123</p>
+                {% elif role == 'admin' %}
+                    <p><span class="text-acrm-orange">ID:</span> ADM001 | <span class="text-acrm-orange">Password:</span> admin123</p>
+                {% elif role == 'master_admin' %}
+                    <p><span class="text-acrm-orange">ID:</span> PRI001 | <span class="text-acrm-orange">Password:</span> principal123</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('loginForm');
+    const togglePasswordBtn = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    const eyeIcon = document.getElementById('eyeIcon');
+    const errorMessage = document.getElementById('errorMessage');
+    const loadingMessage = document.getElementById('loadingMessage');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Toggle password visibility
+    togglePasswordBtn.addEventListener('click', function() {
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-4.803m5.596-3.856a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM19.5 13.5c.174-.298.326-.603.442-.92M19.5 13.5c-.174.298-.326.603-.442.92m0 0A21.694 21.694 0 0021.75 12a10.05 10.05 0 01-17.688-5.25"></path>';
+        } else {
+            passwordInput.type = 'password';
+            eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>';
+        }
+    });
+
+    // Form submission
+    loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const userId = document.getElementById('userId').value.trim();
+        const password = document.getElementById('password').value;
+
+        // Clear errors
+        errorMessage.classList.add('hidden');
+        document.getElementById('userIdError').classList.add('hidden');
+        document.getElementById('passwordError').classList.add('hidden');
+
+        // Validation
+        if (!userId) {
+            document.getElementById('userIdError').textContent = 'Please enter your ID';
+            document.getElementById('userIdError').classList.remove('hidden');
+            return;
+        }
+
+        if (!password) {
+            document.getElementById('passwordError').textContent = 'Please enter your password';
+            document.getElementById('passwordError').classList.remove('hidden');
+            return;
+        }
+
+        // Show loading
+        loadingMessage.classList.remove('hidden');
+        submitBtn.disabled = true;
+
+        try {
+            const response = await fetch('/login-form', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    institution_id: '{{ institution.id }}',
+                    role: '{{ role }}',
+                    user_id: userId,
+                    password: password
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Redirect to dashboard
+                window.location.href = data.redirect;
+            } else {
+                errorMessage.classList.remove('hidden');
+                errorMessage.querySelector('p').textContent = data.message || 'Invalid credentials. Please try again.';
+                loadingMessage.classList.add('hidden');
+                submitBtn.disabled = false;
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            errorMessage.classList.remove('hidden');
+            errorMessage.querySelector('p').textContent = 'An error occurred. Please try again.';
+            loadingMessage.classList.add('hidden');
+            submitBtn.disabled = false;
+        }
+    });
+});
+</script>
+{% endblock %}

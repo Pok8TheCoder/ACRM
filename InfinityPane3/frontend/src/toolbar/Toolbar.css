@@ -1,0 +1,153 @@
+/* ── Toolbar ──────────────────────────────────────────────── */
+
+.toolbar {
+  height: 46px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  flex-shrink: 0;
+  z-index: 100;
+}
+
+.toolbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 6px;
+}
+
+.toolbar-logo {
+  width: 28px;
+  height: 28px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: -0.5px;
+  flex-shrink: 0;
+}
+
+.toolbar-session-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: text;
+  user-select: none;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.toolbar-session-name-input {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 3px 6px !important;
+  width: 180px;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 22px;
+  background: var(--border);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+.toolbar-tools {
+  display: flex;
+  gap: 2px;
+}
+
+.toolbar-tool {
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+  flex-shrink: 0;
+}
+
+.toolbar-tool:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.toolbar-tool.active {
+  background: var(--accent-dim);
+  color: var(--accent-light);
+}
+
+.toolbar-tool:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.toolbar-save {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 0 12px;
+  height: 32px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+  white-space: nowrap;
+}
+
+.toolbar-save:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent);
+  color: var(--accent-light);
+}
+
+.toolbar-save.saving {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.toolbar-conn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 0 10px;
+  height: 28px;
+  border-radius: 14px;
+  border: 1px solid;
+  flex-shrink: 0;
+}
+
+.toolbar-conn.connected {
+  color: var(--success);
+  border-color: rgba(16,185,129,0.3);
+  background: rgba(16,185,129,0.08);
+}
+
+.toolbar-conn.disconnected {
+  color: var(--text-muted);
+  border-color: var(--border);
+  background: transparent;
+  animation: blink 1.5s step-start infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0.5; }
+}
